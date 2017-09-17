@@ -1,0 +1,34 @@
+profile (static)
+- PKID: SHA hash
+- name
+- dob
+- start of day
+
+states (dynamic)
+- PKID: SHA hash
+- last updated 
+- last pooped
+- last peed
+- last fallen asleep
+- last woken up
+
+- number of pee events today
+- number of poop events today
+- number of sleep events today (min)
+
+database (dynamic)
+- PKID: SHA hash
+- pee events
+  - "push"
+    - events
+- poop events
+  - "push"
+    - events
+- fallen asleep events
+  - "push"
+    - events
+- woken up events
+  - "push"
+    - events
+	
+on app load, update the dynamic states
