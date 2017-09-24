@@ -1,32 +1,30 @@
 package com.artemis.hypnos.android;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String babyName = "";
-    private Calendar babyDOB = Calendar.getInstance();
-    private String babyId = "";
-    private Calendar newDayTime = Calendar.getInstance();
+    private BabyProfile babyProfile;
+    private DatabaseHandle databaseHandle;
 
     public final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -36,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private Button mBtnPooped;
     private TextView mTxtPoopedLast;
     private TextView mTxtPoopedToday;
+
+    private Button mBtnPeed;
 
     private TextView mTxtBabyName;
     private TextView mTxtBabyDob;
@@ -57,40 +57,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        babyName = "Tobias Lin";
-        babyDOB.set(2017, Calendar.MAY, 3, 0, 0, 0);
-        newDayTime.set(newDayTime.get(Calendar.YEAR),
-                newDayTime.get(Calendar.MONTH),
-                newDayTime.get(Calendar.DAY_OF_MONTH),
-                7, 0, 0); // new day is 7 am
-        try {
-            String hashString = babyName + ", " + dateFormat.format(babyDOB.getTime());
-
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(hashString.getBytes());
-
-            byte byteData[] = md.digest();
-
-            //convert the byte to hex format method 1
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < byteData.length; i++) {
-                sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
-            }
-
-            babyId = sb.toString();
-            System.out.println("Digest(in hex format):: " + babyId);
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        // connect to firebase
-        auth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        babyProfile = new BabyProfile();
+        databaseHandle = new DatabaseHandle(babyProfile);
+        databaseHandle.setContext(this);
 
         mBtnPooped = (Button) findViewById(R.id.btnPooped);
         mTxtPoopedLast = (TextView) findViewById(R.id.txtLastPooped);
         mTxtPoopedToday = (TextView) findViewById(R.id.txtTodayPooped);
+
+        mBtnPeed = (Button) findViewById(R.id.btnPeed);
 
         mTxtBabyName = (TextView) findViewById(R.id.txtBabyName);
         mTxtBabyDob = (TextView) findViewById(R.id.txtBabyDob);
@@ -99,54 +74,27 @@ public class MainActivity extends AppCompatActivity {
         setHandles();
         setUI();
 
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter(Constants.lbmUIRefresh));
+    }
 
+    // Our handler for received Intents. This will be called whenever an Intent
+    // with an action named "custom-event-name" is broadcasted.
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+//            String message = intent.getStringExtra("message");
+//            Log.d("receiver", "Got message: " + message);
+            setUI();
+        }
+    };
 
-
-
-        // Get a reference to our posts
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference refTimePooped = database.getReference("baby/" + babyId + "/TimePooped");
-
-        // Attach a listener to read the data at our posts reference
-        refTimePooped.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                long latestTimestamp = 0;
-                int counterToday = 0;
-
-                long currentLimit = newDayTime.getTimeInMillis();
-
-                for (DataSnapshot child: dataSnapshot.getChildren()) {
-//                    Log.d("User key", child.getKey());
-//                    Log.d("User ref", child.getRef().toString());
-//                    Log.d("User val", child.getValue().toString());
-
-                    long currTimeStamp = Long.parseLong((String) child.getValue());
-
-                    if (currTimeStamp > latestTimestamp) {
-                        latestTimestamp = currTimeStamp;
-                    }
-
-                    if (currTimeStamp > currentLimit) {
-                        counterToday++;
-                    }
-                }
-
-                Calendar poopTime = Calendar.getInstance();
-                poopTime.setTimeInMillis(latestTimestamp);
-                if (latestTimestamp == 0) {
-                    mTxtPoopedLast.setText("Never pooped");
-                } else {
-                    mTxtPoopedLast.setText(dateFormat.format(poopTime.getTime()));
-                }
-                    mTxtPoopedToday.setText(String.valueOf(counterToday));
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
+    @Override
+    protected void onDestroy() {
+        // Unregister since the activity is about to be closed.
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        super.onDestroy();
     }
 
     public String milliToString(long latestTimestamp) {
@@ -156,9 +104,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setUI() {
-        mTxtBabyName.setText(babyName);
-        mTxtBabyDob.setText(dateFormat.format(babyDOB.getTime()));
-        mTxtNewDayTime.setText(dateFormat.format(newDayTime.getTime()));
+        mTxtBabyName.setText(babyProfile.getBabyName());
+        mTxtBabyDob.setText(babyProfile.getBabyDOB());
+        mTxtNewDayTime.setText(babyProfile.getNewDayTimeString());
+
+        mTxtPoopedLast.setText(databaseHandle.poopCounter.lastTimeOccured);
+        mTxtPoopedToday.setText(databaseHandle.poopCounter.todayCounter);
     }
 
     public void setHandles() {
@@ -168,21 +119,20 @@ public class MainActivity extends AppCompatActivity {
                 addEntryPoop();
             }
         });
+
+        mBtnPeed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addEntryPeed();
+            }
+        });
     }
 
     private void addEntryPoop(){
-//        Date currentTime = Calendar.getInstance().getTime();
-        long currentTimeMs = Calendar.getInstance().getTimeInMillis();
-
-        mDatabase.child("baby").
-                child(babyId).
-                child("TimePooped").
-                push().
-                setValue(String.valueOf(currentTimeMs));
+        databaseHandle.addEntry(babyProfile, Constants.ActivityType.POOPED);
     }
 
-    private void getLastPoop() {
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("baby/" + babyId + "saving-data/fireblog/posts");
+    private void addEntryPeed(){
+        databaseHandle.addEntry(babyProfile, Constants.ActivityType.PEED);
     }
 }

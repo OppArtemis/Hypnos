@@ -8,32 +8,15 @@
     tools:context="com.artemis.hypnos.android.MainActivity2"
     tools:showIn="@layout/activity_main">
 
-    <Button
-        android:id="@+id/btnPooped"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Poop"
-        android:layout_marginTop="47dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        android:id="@+id/txtLastPooped"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/btnPooped"
-        android:layout_alignBottom="@+id/btnPooped"
-        android:layout_centerHorizontal="true"
-        android:text="txtLastPooped" />
-
     <TextView
         android:id="@+id/txtBabyName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnPooped"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="109dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="30dp"
         android:text="txtBabyName" />
 
     <TextView
@@ -41,46 +24,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="txtBabyDob"
-        android:layout_above="@+id/txtNewDayTime"
+        android:layout_below="@+id/txtBabyName"
         android:layout_alignLeft="@+id/txtBabyName"
         android:layout_alignStart="@+id/txtBabyName"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginTop="15dp" />
 
     <TextView
         android:id="@+id/txtNewDayTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="txtNewDayTime"
-        android:layout_centerVertical="true"
+        android:layout_below="@+id/txtBabyDob"
         android:layout_alignLeft="@+id/txtBabyDob"
-        android:layout_alignStart="@+id/txtBabyDob" />
+        android:layout_alignStart="@+id/txtBabyDob"
+        android:layout_marginTop="15dp" />
 
-    <!--<Button-->
-        <!--android:id="@+id/btnPeed"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Peed"-->
-        <!--android:layout_alignBaseline="@+id/btnPooped"-->
-        <!--android:layout_alignBottom="@+id/btnPooped" />-->
 
-    <!--<TextView-->
-        <!--android:id="@+id/txtLastPeed"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="TextView"-->
-        <!--tools:layout_editor_absoluteX="108dp"-->
-        <!--tools:layout_editor_absoluteY="77dp" />-->
 
-    <TextView
-        android:id="@+id/txtTodayPooped"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/txtLastPooped"
-        android:layout_marginLeft="21dp"
-        android:layout_marginStart="21dp"
-        android:layout_toEndOf="@+id/txtNewDayTime"
-        android:layout_toRightOf="@+id/txtNewDayTime"
-        android:text="txtTodayPooped" />
 
     <TextView
         android:id="@+id/textView12"
@@ -88,27 +48,85 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="11dp"
+        android:layout_below="@+id/txtNewDayTime"
+        android:layout_marginLeft="150dp"
         android:text="Last Time" />
 
     <TextView
         android:id="@+id/textView13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/textView12"
-        android:layout_alignLeft="@+id/txtTodayPooped"
-        android:layout_alignStart="@+id/txtTodayPooped"
-        android:layout_marginLeft="14dp"
-        android:layout_marginStart="14dp"
+        android:layout_marginLeft="300dp"
+        android:layout_alignBaseline="@+id/textView12"
         android:text="Total Today" />
 
-    <!--<TextView-->
-        <!--android:id="@+id/txtTodayPeed"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="TextView"-->
-        <!--tools:layout_editor_absoluteX="262dp"-->
-        <!--tools:layout_editor_absoluteY="77dp" />-->
+
+
+
+    <Button
+        android:id="@+id/btnPeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Peed"
+        android:layout_below="@+id/txtNewDayTime"
+        android:layout_alignLeft="@+id/txtNewDayTime"
+        android:layout_alignStart="@+id/txtNewDayTime"
+        android:layout_marginLeft="15dp" />
+
+    <TextView
+        android:id="@+id/txtTodayPeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="txtTodayPeed"
+        android:layout_marginLeft="150dp"
+        android:layout_alignBaseline="@+id/btnPeed"
+        android:layout_alignBottom="@+id/btnPeed" />
+
+    <TextView
+        android:id="@+id/txtLastPeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="txtLastPeed"
+        android:layout_alignBaseline="@+id/txtTodayPeed"
+        android:layout_marginLeft="300dp" />
+
+
+
+    <Button
+        android:id="@+id/btnPooped"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Poop"
+        android:layout_below="@+id/btnPeed"
+        android:layout_alignLeft="@+id/btnPeed"
+        android:layout_alignStart="@+id/btnPeed"
+        android:layout_marginTop="15dp" />
+
+    <TextView
+        android:id="@+id/txtLastPooped"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnPooped"
+        android:layout_alignBottom="@+id/btnPooped"
+        android:text="txtLastPooped"
+        android:layout_marginLeft="150dp"/>
+
+    <TextView
+        android:id="@+id/txtTodayPooped"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="txtTodayPooped"
+        android:layout_alignBaseline="@+id/txtLastPooped"
+        android:layout_alignBottom="@+id/txtLastPooped"
+        android:layout_marginLeft="300dp" />
+
+
+
+
+
+
+
+
 
     <!--<Button-->
         <!--android:id="@+id/btnSleep"-->
