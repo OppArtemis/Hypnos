@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
  */
 
 public class Constants {
-    enum ActivityType { PEED, POOPED, FELL_ASLEEP, WOKE_UP }
+    enum ActivityType { PEE, POOP, SLEEP, WAKE }
     enum SleepWake { ASLEEP, AWAKE }
     enum RootNodeNames { BABY, LOG }
 

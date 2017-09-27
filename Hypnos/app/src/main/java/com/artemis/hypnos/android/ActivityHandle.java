@@ -6,16 +6,29 @@ import java.util.Calendar;
  * Created by jf2lin on 09/20/2017.
  */
 
-public class ActivityHandle {
-    public String user;
-    public String time;
+public class ActivityHandle implements Comparable<ActivityHandle> {
+    private Constants.ActivityType activityType;
+    private String user;
+    private long timeMs;
 
     ActivityHandle() {
 
     }
 
-    ActivityHandle(String user, Calendar time) {
+    ActivityHandle(Constants.ActivityType activityType, String user, long time) {
+        this.activityType = activityType;
         this.user = user;
-        this.time = String.valueOf(time.getTimeInMillis());
+        this.timeMs = time;
+    }
+
+    public Constants.ActivityType getActivityType() { return activityType; }
+
+    public String getUser() { return user; }
+
+    public long getTimeMs() { return timeMs; }
+
+    public int compareTo(ActivityHandle anotherInstance) {
+        long diff = this.getTimeMs() - anotherInstance.getTimeMs();
+        return (int)diff;
     }
 }

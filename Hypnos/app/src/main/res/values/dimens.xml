@@ -4,4 +4,18 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
+
+    <dimen name="horizontal_activity_to_button">5dp</dimen>
+    <dimen name="vertical_header_to_button">90dp</dimen>
+
+    <dimen name="vertical_between_activitytypes">60dp</dimen>
+    <dimen name="horizontal_between_activitytypes">0dp</dimen>
+    <dimen name="vertical_above_activitytypes">-30dp</dimen>
+
+    <dimen name="horizontal_button_to_totaltoday">120dp</dimen>
+    <dimen name="vertical_button_to_totaltoday">0dp</dimen>
+    <dimen name="horizontal_totaltoday_to_lastreportedtime">60dp</dimen>
+    <dimen name="vertical_totaltoday_to_lastreportedtime">0dp</dimen>
+    <dimen name="horizontal_lastreportedtime_to_lastreportedperson">0dp</dimen>
+    <dimen name="vertical_lastreportedtime_to_lastreportedperson">20dp</dimen>
 </resources>
