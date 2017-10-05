@@ -12,7 +12,7 @@ public class ActivityCounterHandle {
     Constants.ActivityType currentActivityType;
     List<ActivityHandle> log = new ArrayList<>();
     int totalToday; // # of times for poo/pee, length of reportedTimeMs in [min] for sleep
-
+    int firstToday;
 
     ActivityCounterHandle(Constants.ActivityType currentActivityType) {
         this.currentActivityType = currentActivityType;
@@ -20,6 +20,8 @@ public class ActivityCounterHandle {
 
     public void reset() {
         log = new ArrayList<>();
+        totalToday = -1;
+        firstToday = -1;
     }
 
     public void push(ActivityHandle newActivityHandle) {
@@ -41,6 +43,10 @@ public class ActivityCounterHandle {
 
             if (currentLastReportedTime > profileNewDayLimit) {
                 totalToday++;
+
+                if (firstToday == -1) {
+                    firstToday = i;
+                }
             }
         }
     }
@@ -49,7 +55,7 @@ public class ActivityCounterHandle {
         if (log.size() == 0) {
             return "Never";
         } else {
-            return Constants.dateFormat.format(log.get(log.size()-1).getTimeMs());
+            return Constants.dateFormatLong.format(log.get(log.size()-1).getTimeMs());
         }
     }
 

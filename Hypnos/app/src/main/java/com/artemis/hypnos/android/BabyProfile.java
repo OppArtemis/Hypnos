@@ -2,28 +2,47 @@ package com.artemis.hypnos.android;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by jf2lin on 09/20/2017.
  */
 
 public class BabyProfile {
-    private String babyName = "";
+    private String babyName;
     private Calendar babyDOB = Calendar.getInstance();
-    private String babyId = "";
     private Calendar newDayTime = Calendar.getInstance();
+    private int newDayHour;
+    private int newDayMinute;
+    private String babyId;
+    private List<String> users = new ArrayList<>();
 
-    BabyProfile() {
-        babyName = "Tobias Lin";
-        babyDOB.set(2017, Calendar.MAY, 3, 0, 0, 0);
-        newDayTime.set(newDayTime.get(Calendar.YEAR),
-                newDayTime.get(Calendar.MONTH),
-                newDayTime.get(Calendar.DAY_OF_MONTH),
-                7, 0, 0); // new day is 7 am
+    public static BabyProfile defaultTest() {
+        BabyProfile tobias = new BabyProfile();
+        tobias.babyName = "Tobias Lin";
+        tobias.babyDOB.set(2017, Calendar.MAY, 3, 0, 0, 0);
+        tobias.setNewDayTime(0, 0);
 
+        tobias.hashFunction();
+        tobias.addUsers("jlin815@gmail.com");
+        tobias.addUsers("jellobaby@gmail.com");
+
+        return tobias;
+    }
+
+    public void setNewDayTime(int hour, int minute) {
+        this.newDayHour = hour;
+        this.newDayMinute = minute;
+        this.newDayTime.set(Calendar.HOUR_OF_DAY, newDayHour); // new day is midnight
+        this.newDayTime.set(Calendar.MINUTE, minute); // new day is midnight
+        this.newDayTime.set(Calendar.SECOND, 0); // new day is midnight
+    }
+
+    public String hashFunction() {
         try {
-            String hashString = babyName + ", " + Constants.dateFormat.format(babyDOB.getTime());
+            String hashString = babyName + ", " + Constants.dateFormatLong.format(babyDOB.getTime());
 
             MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(hashString.getBytes());
@@ -37,30 +56,41 @@ public class BabyProfile {
             }
 
             babyId = sb.toString();
-            System.out.println("Digest(in hex format):: " + babyId);
-
+            return sb.toString();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
+
+        return null;
     }
+
+    public void addUsers(String userEmail) { users.add(userEmail); }
 
     public String getBabyName() {
         return babyName;
     }
 
     public String getBabyDOB() {
-        return Constants.dateFormat.format(babyDOB.getTime());
+        return Constants.dateFormatLong.format(babyDOB.getTime());
     }
 
-    public String getNewDayTimeString() {
-        return Constants.dateFormat.format(newDayTime.getTime());
-    }
+    public String getNewDayTimeString() { return Constants.dateFormatLong.format(newDayTime.getTime()); }
 
     public long getNewDayTimeLong() {
         return newDayTime.getTimeInMillis();
     }
 
+    public List<String> getUsers() { return users; }
+
     public String getBabyId() {
         return babyId;
+    }
+
+    public int getNewDayHour() {
+        return newDayHour;
+    }
+
+    public int getNewDayMinute() {
+        return newDayMinute;
     }
 }

@@ -11,6 +11,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Calendar;
@@ -30,11 +31,10 @@ public class DatabaseHandle {
         this.mContext = mContext;
     }
 
-    private FirebaseAuth auth;
-    private DatabaseReference mDatabase;
     private BabyProfile babyProfile;
-    private String currentUser = "Joanna Wu";
+    private String currentUser = "Jonathan Lin";
 
+    DatabaseReference refBabyRootNode;
     DatabaseReference refLogRootNode;
     ActivityCounterHandle poopCounter = new ActivityCounterHandle(Constants.ActivityType.POOP);
     ActivityCounterHandle peedCounter = new ActivityCounterHandle(Constants.ActivityType.PEE);
@@ -47,10 +47,8 @@ public class DatabaseHandle {
     DatabaseHandle(BabyProfile babyProfile) {
         this.babyProfile = babyProfile;
 
-        auth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        refBabyRootNode = database.getReference(Constants.RootNodeNames.BABY.toString() + "/" + babyProfile.getBabyId() + "/");
         refLogRootNode = database.getReference(Constants.RootNodeNames.LOG.toString() + "/" + babyProfile.getBabyId() + "/");
 
         addLogListener();
@@ -59,7 +57,31 @@ public class DatabaseHandle {
     public BabyProfile getBabyProfile() { return babyProfile; }
     public String getCurrentUser() { return currentUser; }
 
-    public void addEntry(Constants.ActivityType activityType) {
+    public void addBabyEntry() {
+        DatabaseReference usersRef = refBabyRootNode;
+        usersRef.setValue(babyProfile);
+    }
+
+    public void removeLogEntry() {
+        Query lastQuery = refLogRootNode.limitToLast(1);
+
+        lastQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChildren()) {
+                    DataSnapshot firstChild = dataSnapshot.getChildren().iterator().next();
+                    firstChild.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //Handle possible errors.
+            }
+        });
+    }
+
+    public void addLogEntry(Constants.ActivityType activityType) {
         long nowMs = Calendar.getInstance().getTimeInMillis();
         ActivityHandle newEntryToAdd = new ActivityHandle(activityType, currentUser, nowMs);
 
@@ -157,9 +179,11 @@ public class DatabaseHandle {
 
     public void calcSleepLength() {
         sleepLengthMs = 0; // ms -> s -> m
-        for (int i = 0; i < wakeCounter.log.size(); i++) {
-            long delta = wakeCounter.log.get(i).getTimeMs() - sleepCounter.log.get(i).getTimeMs();
-            sleepLengthMs = sleepLengthMs + delta;
+        if (wakeCounter.firstToday > -1) {
+            for (int i = wakeCounter.firstToday; i < wakeCounter.log.size(); i++) {
+                long delta = wakeCounter.log.get(i).getTimeMs() - sleepCounter.log.get(i).getTimeMs();
+                sleepLengthMs = sleepLengthMs + delta;
+            }
         }
     }
 

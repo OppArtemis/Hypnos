@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTxtWakeLastReportedPerson;
     private TextView mTxtWakeTotalToday;
 
+    private Button mBtnUndo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +63,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        BabyProfile babyProfile = new BabyProfile();
-        databaseHandle = new DatabaseHandle(babyProfile);
-        databaseHandle.setContext(this);
-
+        // set ui
         mTxtBabyName = (TextView) findViewById(R.id.txtBabyName);
         mTxtBabyDob = (TextView) findViewById(R.id.txtBabyDob);
         mTxtNewDayTime = (TextView) findViewById(R.id.txtNewDayTime);
@@ -90,6 +88,17 @@ public class MainActivity extends AppCompatActivity {
         mTxtWakeLastReportedTime = (TextView) findViewById(R.id.txtWakeLastReportedTime);
         mTxtWakeLastReportedPerson = (TextView) findViewById(R.id.txtWakeLastReportedPerson);
         mTxtWakeTotalToday = (TextView) findViewById(R.id.txtWakeTotalToday);
+
+        mBtnUndo = (Button) findViewById(R.id.btnUndo);
+
+        // todo get user login
+
+        // load profile
+        BabyProfile babyProfile = BabyProfile.defaultTest();
+        databaseHandle = new DatabaseHandle(babyProfile);
+        databaseHandle.setContext(this);
+
+        databaseHandle.addBabyEntry();
 
         setHandles();
         setUIInit();
@@ -121,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
     public String milliToString(long latestTimestamp) {
         Calendar poopTime = Calendar.getInstance();
         poopTime.setTimeInMillis(latestTimestamp);
-        return Constants.dateFormat.format(poopTime.getTime());
+        return Constants.dateFormatLong.format(poopTime.getTime());
     }
 
     public void setUIInit() {
@@ -153,16 +162,10 @@ public class MainActivity extends AppCompatActivity {
     public String sleepTimeFormat(long sleepLengthMs) {
         String out;
 
-        if (sleepLengthMs < 1000) {
-            out = sleepLengthMs + " ms";
-        } else if (sleepLengthMs < 1000*60) {
-            out = sleepLengthMs / 1000 + " s";
-        }
-        else if (sleepLengthMs < 1000*60*60){
-            out = sleepLengthMs / (1000*60) + " min";
-        } else {
-            out = sleepLengthMs / (1000*60*60) + " hr";
-        }
+        Calendar newTime = Calendar.getInstance();
+        newTime.set(1970, Calendar.JANUARY, 1, 0, 0, 0);
+        long baseTime = newTime.getTimeInMillis() + sleepLengthMs;
+        out = Constants.dateFormatShort.format(baseTime);
 
         return out;
     }
@@ -178,33 +181,44 @@ public class MainActivity extends AppCompatActivity {
         mBtnPee.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addEntry(Constants.ActivityType.PEE);
+                addLogEntry(Constants.ActivityType.PEE);
             }
         });
 
         mBtnPoop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addEntry(Constants.ActivityType.POOP);
+                addLogEntry(Constants.ActivityType.POOP);
             }
         });
 
         mBtnSleep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addEntry(Constants.ActivityType.SLEEP);
+                addLogEntry(Constants.ActivityType.SLEEP);
             }
         });
 
         mBtnWake.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addEntry(Constants.ActivityType.WAKE);
+                addLogEntry(Constants.ActivityType.WAKE);
+            }
+        });
+
+        mBtnUndo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeLogEntry();
             }
         });
     }
 
-    private void addEntry(Constants.ActivityType activityType){
-        databaseHandle.addEntry(activityType);
+    private void addLogEntry(Constants.ActivityType activityType){
+        databaseHandle.addLogEntry(activityType);
+    }
+
+    private void removeLogEntry(){
+        databaseHandle.removeLogEntry();
     }
 }

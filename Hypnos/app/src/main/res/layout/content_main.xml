@@ -239,4 +239,14 @@
         android:layout_marginLeft="@dimen/horizontal_lastreportedtime_to_lastreportedperson"
         android:layout_marginTop="@dimen/vertical_lastreportedtime_to_lastreportedperson"
         android:text="txtWakeLastReportedPerson" />
+
+    <Button
+        android:id="@+id/btnUndo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnWake"
+        android:layout_alignTop="@+id/btnWake"
+        android:layout_marginLeft="@dimen/horizontal_between_activitytypes"
+        android:layout_marginTop="@dimen/vertical_between_activitytypes"
+        android:text="Undo"/>
 </RelativeLayout>
