@@ -38,6 +38,7 @@ public class DatabaseHandle {
     DatabaseReference refLogRootNode;
     ActivityCounterHandle poopCounter = new ActivityCounterHandle(Constants.ActivityType.POOP);
     ActivityCounterHandle peedCounter = new ActivityCounterHandle(Constants.ActivityType.PEE);
+    ActivityCounterHandle eatCounter = new ActivityCounterHandle(Constants.ActivityType.EAT);
     ActivityCounterHandle sleepCounter = new ActivityCounterHandle(Constants.ActivityType.SLEEP);
     ActivityCounterHandle wakeCounter = new ActivityCounterHandle(Constants.ActivityType.WAKE);
 
@@ -138,6 +139,7 @@ public class DatabaseHandle {
 
         peedCounter.reset();
         poopCounter.reset();
+        eatCounter.reset();
         sleepCounter.reset();
         wakeCounter.reset();
 
@@ -155,6 +157,7 @@ public class DatabaseHandle {
         long profileNewDayLimit = babyProfile.getNewDayTimeLong();
         peedCounter.findTotalToday(profileNewDayLimit);
         poopCounter.findTotalToday(profileNewDayLimit);
+        eatCounter.findTotalToday(profileNewDayLimit);
         sleepCounter.findTotalToday(profileNewDayLimit);
         wakeCounter.findTotalToday(profileNewDayLimit);
 
@@ -194,6 +197,9 @@ public class DatabaseHandle {
 
             case POOP:
                 return poopCounter;
+
+            case EAT:
+                return eatCounter;
 
             case SLEEP:
                 return sleepCounter;

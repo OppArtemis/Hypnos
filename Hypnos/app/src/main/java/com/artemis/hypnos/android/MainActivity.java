@@ -20,10 +20,10 @@ public class MainActivity extends AppCompatActivity {
 
     private DatabaseHandle databaseHandle;
 
-    private TextView mTxtBabyName;
-    private TextView mTxtBabyDob;
-    private TextView mTxtNewDayTime;
-    private TextView mTxtCurrentUser;
+//    private TextView mTxtBabyName;
+//    private TextView mTxtBabyDob;
+//    private TextView mTxtNewDayTime;
+//    private TextView mTxtCurrentUser;
 
     private Button mBtnPoop;
     private TextView mTxtPoopLastReportedTime;
@@ -34,6 +34,11 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTxtPeeLastReportedTime;
     private TextView mTxtPeeLastReportedPerson;
     private TextView mTxtPeeTotalToday;
+
+    private Button mBtnEat;
+    private TextView mTxtEatLastReportedTime;
+    private TextView mTxtEatLastReportedPerson;
+    private TextView mTxtEatTotalToday;
 
     private Button mBtnSleep;
     private TextView mTxtSleepLastReportedTime;
@@ -64,10 +69,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // set ui
-        mTxtBabyName = (TextView) findViewById(R.id.txtBabyName);
-        mTxtBabyDob = (TextView) findViewById(R.id.txtBabyDob);
-        mTxtNewDayTime = (TextView) findViewById(R.id.txtNewDayTime);
-        mTxtCurrentUser = (TextView) findViewById(R.id.txtCurrentUser);
+//        mTxtBabyName = (TextView) findViewById(R.id.txtBabyName);
+//        mTxtBabyDob = (TextView) findViewById(R.id.txtBabyDob);
+//        mTxtNewDayTime = (TextView) findViewById(R.id.txtNewDayTime);
+//        mTxtCurrentUser = (TextView) findViewById(R.id.txtCurrentUser);
 
         mBtnPoop = (Button) findViewById(R.id.btnPoop);
         mTxtPoopLastReportedTime = (TextView) findViewById(R.id.txtPoopLastReportedTime);
@@ -78,6 +83,11 @@ public class MainActivity extends AppCompatActivity {
         mTxtPeeLastReportedTime = (TextView) findViewById(R.id.txtPeeLastReportedTime);
         mTxtPeeLastReportedPerson = (TextView) findViewById(R.id.txtPeeLastReportedPerson);
         mTxtPeeTotalToday = (TextView) findViewById(R.id.txtPeeTotalToday);
+
+        mBtnEat = (Button) findViewById(R.id.btnEat);
+        mTxtEatLastReportedTime = (TextView) findViewById(R.id.txtEatLastReportedTime);
+        mTxtEatLastReportedPerson = (TextView) findViewById(R.id.txtEatLastReportedPerson);
+        mTxtEatTotalToday = (TextView) findViewById(R.id.txtEatTotalToday);
 
         mBtnSleep = (Button) findViewById(R.id.btnSleep);
         mTxtSleepLastReportedTime = (TextView) findViewById(R.id.txtSleepLastReportedTime);
@@ -100,8 +110,10 @@ public class MainActivity extends AppCompatActivity {
 
         databaseHandle.addBabyEntry();
 
+        getSupportActionBar().setTitle(babyProfile.getBabyName());
+
         setHandles();
-        setUIInit();
+//        setUIInit();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter(Constants.lbmUIRefresh));
@@ -133,16 +145,17 @@ public class MainActivity extends AppCompatActivity {
         return Constants.dateFormatLong.format(poopTime.getTime());
     }
 
-    public void setUIInit() {
-        mTxtBabyName.setText("Name: " + databaseHandle.getBabyProfile().getBabyName());
-        mTxtBabyDob.setText("DOB: " + databaseHandle.getBabyProfile().getBabyDOB());
-        mTxtNewDayTime.setText("Day Start: " + databaseHandle.getBabyProfile().getNewDayTimeString());
-        mTxtCurrentUser.setText("User: " + databaseHandle.getCurrentUser());
-    }
+//    public void setUIInit() {
+//        mTxtBabyName.setText("Name: " + databaseHandle.getBabyProfile().getBabyName());
+//        mTxtBabyDob.setText("DOB: " + databaseHandle.getBabyProfile().getBabyDOB());
+//        mTxtNewDayTime.setText("Day Start: " + databaseHandle.getBabyProfile().getNewDayTimeString());
+//        mTxtCurrentUser.setText("User: " + databaseHandle.getCurrentUser());
+//    }
 
     public void setUI(Constants.ActivityType activityType) {
         setUICluster(mTxtPeeTotalToday, mTxtPeeLastReportedTime, mTxtPeeLastReportedPerson, databaseHandle.peedCounter);
         setUICluster(mTxtPoopTotalToday, mTxtPoopLastReportedTime, mTxtPoopLastReportedPerson, databaseHandle.poopCounter);
+        setUICluster(mTxtEatTotalToday, mTxtEatLastReportedTime, mTxtEatLastReportedPerson, databaseHandle.eatCounter);
         setUICluster(mTxtSleepTotalToday, mTxtSleepLastReportedTime, mTxtSleepLastReportedPerson, databaseHandle.sleepCounter);
         setUICluster(mTxtWakeTotalToday, mTxtWakeLastReportedTime, mTxtWakeLastReportedPerson, databaseHandle.wakeCounter);
 
@@ -189,6 +202,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 addLogEntry(Constants.ActivityType.POOP);
+            }
+        });
+
+        mBtnEat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addLogEntry(Constants.ActivityType.EAT);
             }
         });
 

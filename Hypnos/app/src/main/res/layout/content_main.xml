@@ -9,46 +9,46 @@
     tools:showIn="@layout/activity_main">
 
     <!-- BABY DEMOGRAPHICS -->
-    <TextView
-        android:id="@+id/txtBabyName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="30dp"
-        android:text="txtBabyName" />
+    <!--<TextView-->
+        <!--android:id="@+id/txtBabyName"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_marginTop="30dp"-->
+        <!--android:layout_marginLeft="30dp"-->
+        <!--android:text="txtBabyName" />-->
 
-    <TextView
-        android:id="@+id/txtBabyDob"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="txtBabyDob"
-        android:layout_below="@+id/txtBabyName"
-        android:layout_alignLeft="@+id/txtBabyName"
-        android:layout_alignStart="@+id/txtBabyName"
-        android:layout_marginTop="15dp" />
+    <!--<TextView-->
+        <!--android:id="@+id/txtBabyDob"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="txtBabyDob"-->
+        <!--android:layout_below="@+id/txtBabyName"-->
+        <!--android:layout_alignLeft="@+id/txtBabyName"-->
+        <!--android:layout_alignStart="@+id/txtBabyName"-->
+        <!--android:layout_marginTop="15dp" />-->
 
-    <TextView
-        android:id="@+id/txtNewDayTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="txtNewDayTime"
-        android:layout_below="@+id/txtBabyDob"
-        android:layout_alignLeft="@+id/txtBabyDob"
-        android:layout_alignStart="@+id/txtBabyDob"
-        android:layout_marginTop="15dp" />
+    <!--<TextView-->
+        <!--android:id="@+id/txtNewDayTime"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="txtNewDayTime"-->
+        <!--android:layout_below="@+id/txtBabyDob"-->
+        <!--android:layout_alignLeft="@+id/txtBabyDob"-->
+        <!--android:layout_alignStart="@+id/txtBabyDob"-->
+        <!--android:layout_marginTop="15dp" />-->
 
-    <TextView
-        android:id="@+id/txtCurrentUser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="txtCurrentUser"
-        android:layout_below="@+id/txtNewDayTime"
-        android:layout_alignLeft="@+id/txtNewDayTime"
-        android:layout_alignStart="@+id/txtNewDayTime"
-        android:layout_marginTop="15dp" />
+    <!--<TextView-->
+        <!--android:id="@+id/txtCurrentUser"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="txtCurrentUser"-->
+        <!--android:layout_below="@+id/txtNewDayTime"-->
+        <!--android:layout_alignLeft="@+id/txtNewDayTime"-->
+        <!--android:layout_alignStart="@+id/txtNewDayTime"-->
+        <!--android:layout_marginTop="15dp" />-->
 
     <!-- HEADER -->
     <TextView
@@ -78,11 +78,17 @@
         android:id="@+id/btnPee"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/txtCurrentUser"
-        android:layout_alignTop="@+id/txtCurrentUser"
-        android:layout_marginLeft="@dimen/horizontal_activity_to_button"
-        android:layout_marginTop="@dimen/vertical_header_to_button"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="30dp"
         android:text="Pee" />
+        <!--android:layout_alignLeft="@+id/txtBabyName"-->
+        <!--android:layout_alignTop="@+id/txtBabyName"-->
+        <!--android:layout_marginLeft="@dimen/horizontal_activity_to_button"-->
+        <!--android:layout_marginTop="@dimen/vertical_header_to_button"-->
+
 
     <TextView
         android:id="@+id/txtPeeTotalToday"
@@ -91,8 +97,7 @@
         android:layout_alignLeft="@+id/btnPee"
         android:layout_alignTop="@+id/btnPee"
         android:layout_marginLeft="@dimen/horizontal_button_to_totaltoday"
-        android:layout_marginTop="@dimen/vertical_button_to_totaltoday"
-        android:text="txtTotalPeeToday" />
+        android:layout_marginTop="@dimen/vertical_button_to_totaltoday" />
 
     <TextView
         android:id="@+id/txtPeeLastReportedTime"
@@ -101,8 +106,7 @@
         android:layout_alignLeft="@+id/txtPeeTotalToday"
         android:layout_alignTop="@+id/txtPeeTotalToday"
         android:layout_marginLeft="@dimen/horizontal_totaltoday_to_lastreportedtime"
-        android:layout_marginTop="@dimen/vertical_totaltoday_to_lastreportedtime"
-        android:text="txtLastPeeReportedTime"		/>
+        android:layout_marginTop="@dimen/vertical_totaltoday_to_lastreportedtime" />
 
     <TextView
         android:id="@+id/txtPeeLastReportedPerson"
@@ -111,8 +115,7 @@
         android:layout_alignLeft="@+id/txtPeeLastReportedTime"
         android:layout_alignTop="@+id/txtPeeLastReportedTime"
         android:layout_marginLeft="@dimen/horizontal_lastreportedtime_to_lastreportedperson"
-        android:layout_marginTop="@dimen/vertical_lastreportedtime_to_lastreportedperson"
-        android:text="txtLastPeeReportedPerson"/>
+        android:layout_marginTop="@dimen/vertical_lastreportedtime_to_lastreportedperson" />
 
 
 
@@ -133,8 +136,7 @@
         android:layout_alignLeft="@+id/btnPoop"
         android:layout_alignTop="@+id/btnPoop"
         android:layout_marginLeft="@dimen/horizontal_button_to_totaltoday"
-        android:layout_marginTop="@dimen/vertical_button_to_totaltoday"
-        android:text="txtTodayPoop"/>
+        android:layout_marginTop="@dimen/vertical_button_to_totaltoday" />
 
     <TextView
         android:id="@+id/txtPoopLastReportedTime"
@@ -143,8 +145,7 @@
         android:layout_alignLeft="@+id/txtPoopTotalToday"
         android:layout_alignTop="@+id/txtPoopTotalToday"
         android:layout_marginLeft="@dimen/horizontal_totaltoday_to_lastreportedtime"
-        android:layout_marginTop="@dimen/vertical_totaltoday_to_lastreportedtime"
-        android:text="txtLastPoop"/>
+        android:layout_marginTop="@dimen/vertical_totaltoday_to_lastreportedtime" />
 
     <TextView
         android:id="@+id/txtPoopLastReportedPerson"
@@ -153,8 +154,46 @@
         android:layout_alignLeft="@+id/txtPoopLastReportedTime"
         android:layout_alignTop="@+id/txtPoopLastReportedTime"
         android:layout_marginLeft="@dimen/horizontal_lastreportedtime_to_lastreportedperson"
-        android:layout_marginTop="@dimen/vertical_lastreportedtime_to_lastreportedperson"
-        android:text="txtLastPoop"/>
+        android:layout_marginTop="@dimen/vertical_lastreportedtime_to_lastreportedperson" />
+
+
+
+    <Button
+        android:id="@+id/btnEat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnPoop"
+        android:layout_alignTop="@+id/btnPoop"
+        android:layout_marginLeft="@dimen/horizontal_between_activitytypes"
+        android:layout_marginTop="@dimen/vertical_between_activitytypes"
+        android:text="Eat" />
+
+    <TextView
+        android:id="@+id/txtEatTotalToday"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnEat"
+        android:layout_alignTop="@+id/btnEat"
+        android:layout_marginLeft="@dimen/horizontal_button_to_totaltoday"
+        android:layout_marginTop="@dimen/vertical_button_to_totaltoday" />
+
+    <TextView
+        android:id="@+id/txtEatLastReportedTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtEatTotalToday"
+        android:layout_alignTop="@+id/txtEatTotalToday"
+        android:layout_marginLeft="@dimen/horizontal_totaltoday_to_lastreportedtime"
+        android:layout_marginTop="@dimen/vertical_totaltoday_to_lastreportedtime" />
+
+    <TextView
+        android:id="@+id/txtEatLastReportedPerson"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtEatLastReportedTime"
+        android:layout_alignTop="@+id/txtEatLastReportedTime"
+        android:layout_marginLeft="@dimen/horizontal_lastreportedtime_to_lastreportedperson"
+        android:layout_marginTop="@dimen/vertical_lastreportedtime_to_lastreportedperson" />
 
 
 
@@ -162,8 +201,8 @@
         android:id="@+id/btnSleep"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btnPoop"
-        android:layout_alignTop="@+id/btnPoop"
+        android:layout_alignLeft="@+id/btnEat"
+        android:layout_alignTop="@+id/btnEat"
         android:layout_marginLeft="@dimen/horizontal_between_activitytypes"
         android:layout_marginTop="@dimen/vertical_between_activitytypes"
         android:text="Sleep"/>
@@ -175,8 +214,7 @@
         android:layout_alignLeft="@+id/btnSleep"
         android:layout_alignTop="@+id/btnSleep"
         android:layout_marginLeft="@dimen/horizontal_button_to_totaltoday"
-        android:layout_marginTop="@dimen/vertical_button_to_totaltoday"
-        android:text="txtSleepTotalToday" />
+        android:layout_marginTop="@dimen/vertical_button_to_totaltoday" />
 
     <TextView
         android:id="@+id/txtSleepLastReportedTime"
@@ -185,8 +223,7 @@
         android:layout_alignLeft="@+id/txtSleepTotalToday"
         android:layout_alignTop="@+id/txtSleepTotalToday"
         android:layout_marginLeft="@dimen/horizontal_totaltoday_to_lastreportedtime"
-        android:layout_marginTop="@dimen/vertical_totaltoday_to_lastreportedtime"
-        android:text="txtSleepLastReportedTime" />
+        android:layout_marginTop="@dimen/vertical_totaltoday_to_lastreportedtime" />
 
     <TextView
         android:id="@+id/txtSleepLastReportedPerson"
@@ -195,8 +232,7 @@
         android:layout_alignLeft="@+id/txtSleepLastReportedTime"
         android:layout_alignTop="@+id/txtSleepLastReportedTime"
         android:layout_marginLeft="@dimen/horizontal_lastreportedtime_to_lastreportedperson"
-        android:layout_marginTop="@dimen/vertical_lastreportedtime_to_lastreportedperson"
-        android:text="txtSleepLastReportedPerson" />
+        android:layout_marginTop="@dimen/vertical_lastreportedtime_to_lastreportedperson"/>
 
 
 
@@ -217,8 +253,7 @@
         android:layout_alignLeft="@+id/btnWake"
         android:layout_alignTop="@+id/btnWake"
         android:layout_marginLeft="@dimen/horizontal_button_to_totaltoday"
-        android:layout_marginTop="@dimen/vertical_button_to_totaltoday"
-        android:text="txtWakeTotalToday" />
+        android:layout_marginTop="@dimen/vertical_button_to_totaltoday"/>
 
     <TextView
         android:id="@+id/txtWakeLastReportedTime"
@@ -227,8 +262,7 @@
         android:layout_alignLeft="@+id/txtWakeTotalToday"
         android:layout_alignTop="@+id/txtWakeTotalToday"
         android:layout_marginLeft="@dimen/horizontal_totaltoday_to_lastreportedtime"
-        android:layout_marginTop="@dimen/vertical_totaltoday_to_lastreportedtime"
-        android:text="txtWakeLastReportedTime"/>
+        android:layout_marginTop="@dimen/vertical_totaltoday_to_lastreportedtime"/>
 
     <TextView
         android:id="@+id/txtWakeLastReportedPerson"
@@ -237,8 +271,7 @@
         android:layout_alignLeft="@+id/txtWakeLastReportedTime"
         android:layout_alignTop="@+id/txtWakeLastReportedTime"
         android:layout_marginLeft="@dimen/horizontal_lastreportedtime_to_lastreportedperson"
-        android:layout_marginTop="@dimen/vertical_lastreportedtime_to_lastreportedperson"
-        android:text="txtWakeLastReportedPerson" />
+        android:layout_marginTop="@dimen/vertical_lastreportedtime_to_lastreportedperson" />
 
     <Button
         android:id="@+id/btnUndo"
