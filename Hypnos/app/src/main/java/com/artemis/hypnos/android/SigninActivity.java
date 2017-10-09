@@ -1,4 +1,4 @@
-package com.artemis.hermes.android;
+package com.artemis.hypnos.android;
 
 /**
  * Class that performs the sign-in and sign-out actions.
@@ -21,16 +21,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 // Firebase libraries
-import com.artemis.hermes.backend.myApi.MyApi;
 import com.firebase.ui.auth.AuthUI;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
-import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-import com.google.api.client.http.HttpResponseException;
-import com.google.api.client.json.gson.GsonFactory;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
@@ -102,15 +96,6 @@ public class SigninActivity extends AppCompatActivity {
                         });
             }
         });
-
-        // Button to update user's location
-        Button showMapButton = findViewById(R.id.view_map);
-        showMapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                goToMap();
-            }
-        });
     }
 
     /**
@@ -141,23 +126,7 @@ public class SigninActivity extends AppCompatActivity {
         profileName = findViewById(R.id.user_name);
         if(mUser != null){
             profileName.setText(TextUtils.isEmpty(mUser.getDisplayName())? "No name found" : mUser.getDisplayName());
-
-            // Play with endpoints
-            new EndpointsSayHi().execute(mUser.getDisplayName());
-
-            new EndpointsReadDatabaseData().execute(mUserId);
         }
-    }
-
-    /**
-     * Helper method to start an activity on maps.
-     *
-     */
-    private void goToMap(){
-        Intent mapIntent = new Intent(this, Naviations.class);
-        mapIntent.putExtra("userId", mUserId);
-        startActivity(mapIntent);
-        finish();
     }
 
     /**
@@ -182,135 +151,5 @@ public class SigninActivity extends AppCompatActivity {
                 child(mUserId).
                 child("lastLoginTime").
                 setValue(String.valueOf(currentTime));
-    }
-
-    /**
-     * EndpointsSayHi class that talks to the backend logic endpoints
-     * which returns a messsage to the user.
-     *
-     * @author  Jorge Quan
-     * @since   2017-09-14
-     */
-    private class EndpointsSayHi extends AsyncTask<String, Void, String> {
-        private MyApi myApiService = null;
-
-        /**
-         * Method that performs the call to the API
-         *
-         * @param params to enter as input for API
-         *
-         * @return data of the API
-         */
-        @Override
-        protected String doInBackground(String... params) {
-
-            if (myApiService == null) {  // Only do this once
-                MyApi.Builder builder = new MyApi.Builder(
-                        AndroidHttp.newCompatibleTransport(),
-                        new GsonFactory(), null)
-                        .setRootUrl(Constants.API_ROOT_URL)
-                        .setApplicationName("@string/app_name")
-                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-                            @Override
-                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
-                                abstractGoogleClientRequest.setDisableGZipContent(true);
-                            }
-                        });
-
-                myApiService = builder.build();
-            }
-
-            try {
-                return myApiService.sayHi(params[0]).execute().getData();
-            } catch (IOException e) {
-                // Check if it is a HTTP response error
-                if(e instanceof HttpResponseException) {
-                    int statusCode = ((HttpResponseException) e).getStatusCode();
-                    // 404 is not found, so likely the server is down
-                    if (statusCode == 404) {
-                        return "Restaurant Searcher brain is not found (404)";
-                    }
-                }
-                // return the raw message
-                return e.getMessage();
-            }
-        }
-
-        /**
-         * Method that puts the result of the API on a message.
-         *
-         * @param result is the string output of API
-         */
-        @Override
-        protected void onPostExecute(String result) {
-            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
-
-            TextView customMessage = findViewById(R.id.custom_message);
-            customMessage.setText(result);
-        }
-    }
-
-
-    /**
-     * EndpointsReadDatabaseData class that talks to the backend logic endpoints
-     * which returns a messsage to the user.
-     *
-     * @author  Jorge Quan
-     * @since   2017-09-14
-     */
-    private class EndpointsReadDatabaseData extends AsyncTask<String, Void, String> {
-        private MyApi myApiService = null;
-
-        /**
-         * Method that performs the call to the API
-         *
-         * @param params to enter as input for API
-         *
-         * @return data of the API
-         */
-        @Override
-        protected String doInBackground(String... params) {
-
-            if (myApiService == null) {  // Only do this once
-                MyApi.Builder builder = new MyApi.Builder(
-                        AndroidHttp.newCompatibleTransport(),
-                        new GsonFactory(), null)
-                        .setRootUrl(Constants.API_ROOT_URL)
-                        .setApplicationName("@string/app_name")
-                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-                            @Override
-                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
-                                abstractGoogleClientRequest.setDisableGZipContent(true);
-                            }
-                        });
-
-                myApiService = builder.build();
-            }
-
-            try {
-                return myApiService.getDatabaseInfo(params[0]).execute().getData();
-            } catch (IOException e) {
-                // Check if it is a HTTP response error
-                if(e instanceof HttpResponseException) {
-                    int statusCode = ((HttpResponseException) e).getStatusCode();
-                    // 404 is not found, so likely the server is down
-                    if (statusCode == 404) {
-                        return "Restaurant Searcher brain is not found (404)";
-                    }
-                }
-                // return the raw message
-                return e.getMessage();
-            }
-        }
-
-        /**
-         * Method that puts the result of the API on a message.
-         *
-         * @param result is the string output of API
-         */
-        @Override
-        protected void onPostExecute(String result) {
-            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
-        }
     }
 }

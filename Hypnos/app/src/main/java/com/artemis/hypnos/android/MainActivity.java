@@ -1,4 +1,4 @@
-package com.artemis.hermes.android;
+package com.artemis.hypnos.android;
 
 /**
  * Main Activity, the entry point for the app, which
@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
                                     .setIsSmartLockEnabled(!BuildConfig.DEBUG)
                                     .setAvailableProviders(
                                             Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
-                                                    new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build(),
                                                     new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build()))
                                     .build(),
                             RC_SIGN_IN);

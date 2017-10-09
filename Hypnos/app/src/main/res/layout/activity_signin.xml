@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorGrey"
     tools:context=".SigninActivity">
     <TextView
         android:id="@+id/user_profile"
@@ -13,7 +12,6 @@
         android:layout_alignParentTop="true"
         android:text="@string/user_profile"
         android:textSize="13dp"
-        android:textColor="@color/colorBlack"
         android:layout_centerHorizontal="true"/>
     <TextView
         android:id="@+id/user_name"
@@ -24,16 +22,12 @@
         android:text="@string/user_name"
         android:textSize="26dp"
         android:textStyle="bold"
-        android:textColor="@color/colorSlateBlue"
         android:layout_centerHorizontal="true"/>
 
     <Button
         android:id="@+id/view_map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/colorSlateBlue"
-        android:text="@string/locationServices"
-        android:textColor="@color/colorWhite"
         android:layout_marginTop="25dp"
         android:layout_below="@+id/custom_message"
         android:layout_centerHorizontal="true" />
@@ -49,9 +43,7 @@
             android:id="@+id/sign_out"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@color/colorSlateBlue"
             android:text="@string/logout"
-            android:textColor="@color/colorWhite"
             android:layout_marginRight="3dp"
             android:layout_weight="1"/>
     </LinearLayout>
