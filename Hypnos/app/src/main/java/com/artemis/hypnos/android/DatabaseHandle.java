@@ -202,7 +202,7 @@ public class DatabaseHandle {
                 else
                     startTime = sleepCounter.log.get(i).getTimeMs();
 
-                if (i > wakeCounter.log.size())
+                if (i > wakeCounter.log.size() - 1)
                     endTime = Calendar.getInstance().getTimeInMillis();
                 else
                     endTime = wakeCounter.log.get(i).getTimeMs();
