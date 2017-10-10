@@ -20,7 +20,7 @@ public class ActivityCounterHandle {
 
     public void reset() {
         log = new ArrayList<>();
-        totalToday = -1;
+        totalToday = 0;
         firstToday = -1;
     }
 
@@ -36,17 +36,18 @@ public class ActivityCounterHandle {
     public void findTotalToday(long todayStartTimeLong) {
         long profileNewDayLimit = todayStartTimeLong;
         totalToday = 0;
+        firstToday = -1;
 
         for (int i = 0; i < log.size(); i++) {
             ActivityHandle newPost = log.get(i);
             long currentLastReportedTime = newPost.getTimeMs();
 
             if (currentLastReportedTime > profileNewDayLimit) {
-                totalToday++;
-
-                if (firstToday == -1) {
+                if (totalToday == 0) {
                     firstToday = i;
                 }
+
+                totalToday++;
             }
         }
     }
