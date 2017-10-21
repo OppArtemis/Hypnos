@@ -282,4 +282,13 @@
         android:layout_marginLeft="@dimen/horizontal_between_activitytypes"
         android:layout_marginTop="@dimen/vertical_between_activitytypes"
         android:text="Undo"/>
+
+    <TextView
+        android:id="@+id/txtSleepList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnUndo"
+        android:layout_alignTop="@+id/btnUndo"
+        android:layout_marginLeft="@dimen/horizontal_button_to_totaltoday"
+        android:layout_marginTop="@dimen/vertical_button_to_totaltoday"/>
 </RelativeLayout>

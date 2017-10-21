@@ -8,6 +8,7 @@ import android.util.Log;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,7 +34,7 @@ public class DatabaseHandle {
     }
 
     private BabyProfile babyProfile;
-    private String currentUser = "Jonathan Lin";
+    private String currentUser = "Joanna Wu";
 
     DatabaseReference refBabyRootNode;
     DatabaseReference refLogRootNode;
@@ -45,6 +46,7 @@ public class DatabaseHandle {
 
     long sleepLengthMs = 0;
     Constants.SleepWake sleepState = Constants.SleepWake.AWAKE;
+    String sleepList = "";
 
     DatabaseHandle(BabyProfile babyProfile) {
         this.babyProfile = babyProfile;
@@ -187,10 +189,39 @@ public class DatabaseHandle {
 
     public void calcSleepLength() {
         sleepLengthMs = 0; // ms -> s -> m
-        if (wakeCounter.firstToday > -1) {
-            for (int i = wakeCounter.firstToday; i < wakeCounter.log.size(); i++) {
-                long delta = wakeCounter.log.get(i).getTimeMs() - sleepCounter.log.get(i).getTimeMs();
+        sleepList = "";
+        if (sleepCounter.firstToday > -1 || sleepCounter.log.size() > wakeCounter.log.size()) {
+            int startInd = sleepCounter.firstToday;
+
+            startInd--;
+
+            if (sleepCounter.log.size() > wakeCounter.log.size()) {
+                // currently asleep
+
+                if (sleepCounter.firstToday < 0)
+                    startInd = sleepCounter.log.size() - 1;
+            }
+
+            for (int i = startInd; i < sleepCounter.log.size(); i++) {
+                long startTime;
+                long endTime;
+
+                if (sleepCounter.log.get(i).getTimeMs() < babyProfile.getNewDayTimeLong())
+                    startTime = babyProfile.getNewDayTimeLong();
+                else
+                    startTime = sleepCounter.log.get(i).getTimeMs();
+
+                if (i > wakeCounter.log.size() - 1)
+                    endTime = Calendar.getInstance().getTimeInMillis();
+                else
+                    endTime = wakeCounter.log.get(i).getTimeMs();
+
+                long delta = endTime - startTime;
                 sleepLengthMs = sleepLengthMs + delta;
+
+                sleepList = sleepList +
+                                Constants.dateFormatLong.format(startTime) +
+                               " for " + Constants.sleepTimeFormat(delta) + "\n";
             }
         }
     }

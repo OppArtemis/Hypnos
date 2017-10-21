@@ -51,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTxtWakeTotalToday;
 
     private Button mBtnUndo;
-
+    private TextView mTxtSleepList;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,38 +70,39 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // set ui
-//        mTxtBabyName = (TextView) findViewById(R.id.txtBabyName);
-//        mTxtBabyDob = (TextView) findViewById(R.id.txtBabyDob);
-//        mTxtNewDayTime = (TextView) findViewById(R.id.txtNewDayTime);
-//        mTxtCurrentUser = (TextView) findViewById(R.id.txtCurrentUser);
+//        mTxtBabyName = findViewById(R.id.txtBabyName);
+//        mTxtBabyDob = findViewById(R.id.txtBabyDob);
+//        mTxtNewDayTime = findViewById(R.id.txtNewDayTime);
+//        mTxtCurrentUser = findViewById(R.id.txtCurrentUser);
 
-        mBtnPoop = (Button) findViewById(R.id.btnPoop);
-        mTxtPoopLastReportedTime = (TextView) findViewById(R.id.txtPoopLastReportedTime);
-        mTxtPoopLastReportedPerson = (TextView) findViewById(R.id.txtPoopLastReportedPerson);
-        mTxtPoopTotalToday = (TextView) findViewById(R.id.txtPoopTotalToday);
+        mBtnPoop = findViewById(R.id.btnPoop);
+        mTxtPoopLastReportedTime = findViewById(R.id.txtPoopLastReportedTime);
+        mTxtPoopLastReportedPerson = findViewById(R.id.txtPoopLastReportedPerson);
+        mTxtPoopTotalToday = findViewById(R.id.txtPoopTotalToday);
 
-        mBtnPee = (Button) findViewById(R.id.btnPee);
-        mTxtPeeLastReportedTime = (TextView) findViewById(R.id.txtPeeLastReportedTime);
-        mTxtPeeLastReportedPerson = (TextView) findViewById(R.id.txtPeeLastReportedPerson);
-        mTxtPeeTotalToday = (TextView) findViewById(R.id.txtPeeTotalToday);
+        mBtnPee = findViewById(R.id.btnPee);
+        mTxtPeeLastReportedTime = findViewById(R.id.txtPeeLastReportedTime);
+        mTxtPeeLastReportedPerson = findViewById(R.id.txtPeeLastReportedPerson);
+        mTxtPeeTotalToday = findViewById(R.id.txtPeeTotalToday);
 
-        mBtnEat = (Button) findViewById(R.id.btnEat);
-        mTxtEatLastReportedTime = (TextView) findViewById(R.id.txtEatLastReportedTime);
-        mTxtEatLastReportedPerson = (TextView) findViewById(R.id.txtEatLastReportedPerson);
-        mTxtEatTotalToday = (TextView) findViewById(R.id.txtEatTotalToday);
+        mBtnEat = findViewById(R.id.btnEat);
+        mTxtEatLastReportedTime = findViewById(R.id.txtEatLastReportedTime);
+        mTxtEatLastReportedPerson = findViewById(R.id.txtEatLastReportedPerson);
+        mTxtEatTotalToday = findViewById(R.id.txtEatTotalToday);
 
-        mBtnSleep = (Button) findViewById(R.id.btnSleep);
-        mTxtSleepLastReportedTime = (TextView) findViewById(R.id.txtSleepLastReportedTime);
-        mTxtSleepLastReportedPerson = (TextView) findViewById(R.id.txtSleepLastReportedPerson);
-        mTxtSleepTotalToday = (TextView) findViewById(R.id.txtSleepTotalToday);
+        mBtnSleep = findViewById(R.id.btnSleep);
+        mTxtSleepLastReportedTime = findViewById(R.id.txtSleepLastReportedTime);
+        mTxtSleepLastReportedPerson = findViewById(R.id.txtSleepLastReportedPerson);
+        mTxtSleepTotalToday = findViewById(R.id.txtSleepTotalToday);
 
-        mBtnWake = (Button) findViewById(R.id.btnWake);
-        mTxtWakeLastReportedTime = (TextView) findViewById(R.id.txtWakeLastReportedTime);
-        mTxtWakeLastReportedPerson = (TextView) findViewById(R.id.txtWakeLastReportedPerson);
-        mTxtWakeTotalToday = (TextView) findViewById(R.id.txtWakeTotalToday);
+        mBtnWake = findViewById(R.id.btnWake);
+        mTxtWakeLastReportedTime = findViewById(R.id.txtWakeLastReportedTime);
+        mTxtWakeLastReportedPerson = findViewById(R.id.txtWakeLastReportedPerson);
+        mTxtWakeTotalToday = findViewById(R.id.txtWakeTotalToday);
 
-        mBtnUndo = (Button) findViewById(R.id.btnUndo);
-
+        mBtnUndo = findViewById(R.id.btnUndo);
+        mTxtSleepList = findViewById(R.id.txtSleepList);
+        
         // todo get user login
 
         // load profile
@@ -160,8 +162,9 @@ public class MainActivity extends AppCompatActivity {
         setUICluster(mTxtWakeTotalToday, mTxtWakeLastReportedTime, mTxtWakeLastReportedPerson, databaseHandle.wakeCounter);
 
         // override the sleep ones
-        mTxtSleepTotalToday.setText(sleepTimeFormat(databaseHandle.sleepLengthMs));
+        mTxtSleepTotalToday.setText(Constants.sleepTimeFormat(databaseHandle.sleepLengthMs));
         mTxtWakeTotalToday.setText(databaseHandle.sleepState.toString());
+        mTxtSleepList.setText(databaseHandle.sleepList);
 
         if (databaseHandle.sleepState == Constants.SleepWake.ASLEEP) {
             mBtnSleep.setVisibility(View.INVISIBLE);
@@ -170,17 +173,6 @@ public class MainActivity extends AppCompatActivity {
             mBtnSleep.setVisibility(View.VISIBLE);
             mBtnWake.setVisibility(View.INVISIBLE);
         }
-    }
-
-    public String sleepTimeFormat(long sleepLengthMs) {
-        String out;
-
-        Calendar newTime = Calendar.getInstance();
-        newTime.set(1970, Calendar.JANUARY, 1, 0, 0, 0);
-        long baseTime = newTime.getTimeInMillis() + sleepLengthMs;
-        out = Constants.dateFormatShort.format(baseTime);
-
-        return out;
     }
 
     public void setUICluster(TextView totalToday, TextView reportedTime, TextView reportedPerson,
