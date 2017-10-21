@@ -1,126 +1,244 @@
 package com.artemis.hypnos.android;
 
-/**
- * Main Activity, the entry point for the app, which
- * requires users to login.
- */
-
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Button;
-import android.widget.Toast;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import java.util.Arrays;
+import android.widget.Button;
+import android.widget.TextView;
 
-// Firebase UI libraries
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.ErrorCodes;
+import java.util.Calendar;
 
-// General Firebase libraries
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-
-/**
- * MainActivity class that handles the entry point of the application,
- * which consists of:
- * - Request user to login
- * - Get the location from user (via location services)
- *
- * @author  Jonathan Lin & Jorge Quan
- * @since   2017-09-03
- */
 public class MainActivity extends AppCompatActivity {
 
-    private Button loginButton;
-    private FirebaseAuth auth;
+    private DatabaseHandle databaseHandle;
 
-    // Choose an arbitrary request code value
-    private static final int RC_SIGN_IN = 128;
+//    private TextView mTxtBabyName;
+//    private TextView mTxtBabyDob;
+//    private TextView mTxtNewDayTime;
+//    private TextView mTxtCurrentUser;
+
+    private Button mBtnPoop;
+    private TextView mTxtPoopLastReportedTime;
+    private TextView mTxtPoopLastReportedPerson;
+    private TextView mTxtPoopTotalToday;
+
+    private Button mBtnPee;
+    private TextView mTxtPeeLastReportedTime;
+    private TextView mTxtPeeLastReportedPerson;
+    private TextView mTxtPeeTotalToday;
+
+    private Button mBtnEat;
+    private TextView mTxtEatLastReportedTime;
+    private TextView mTxtEatLastReportedPerson;
+    private TextView mTxtEatTotalToday;
+
+    private Button mBtnSleep;
+    private TextView mTxtSleepLastReportedTime;
+    private TextView mTxtSleepLastReportedPerson;
+    private TextView mTxtSleepTotalToday;
+
+    private Button mBtnWake;
+    private TextView mTxtWakeLastReportedTime;
+    private TextView mTxtWakeLastReportedPerson;
+    private TextView mTxtWakeTotalToday;
+
+    private Button mBtnUndo;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
-        auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
-        if (user == null) {
-            setContentView(R.layout.activity_main);
-
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            loginButton = (Button)findViewById(R.id.login_button);
-            loginButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivityForResult(AuthUI.getInstance()
-                                    .createSignInIntentBuilder()
-                                    .setIsSmartLockEnabled(!BuildConfig.DEBUG)
-                                    .setAvailableProviders(
-                                            Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
-                                                    new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build()))
-                                    .build(),
-                            RC_SIGN_IN);
-                }
-            });
-        } else {
-            loginUser();
-        }
-    }
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // RC_SIGN_IN is the request code you passed into startActivityForResult
-        if (requestCode == RC_SIGN_IN) {
-
-            if(resultCode == RESULT_OK){
-                loginUser();
-            } else {
-
-                IdpResponse response = IdpResponse.fromResultIntent(data);
-                if (resultCode == RESULT_CANCELED) {
-                    displayMessage(getString(R.string.signin_failed));
-                }
-
-                if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    displayMessage(getString(R.string.no_network));
-                }
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
+        });
 
-            return;
+        // set ui
+//        mTxtBabyName = (TextView) findViewById(R.id.txtBabyName);
+//        mTxtBabyDob = (TextView) findViewById(R.id.txtBabyDob);
+//        mTxtNewDayTime = (TextView) findViewById(R.id.txtNewDayTime);
+//        mTxtCurrentUser = (TextView) findViewById(R.id.txtCurrentUser);
+
+        mBtnPoop = (Button) findViewById(R.id.btnPoop);
+        mTxtPoopLastReportedTime = (TextView) findViewById(R.id.txtPoopLastReportedTime);
+        mTxtPoopLastReportedPerson = (TextView) findViewById(R.id.txtPoopLastReportedPerson);
+        mTxtPoopTotalToday = (TextView) findViewById(R.id.txtPoopTotalToday);
+
+        mBtnPee = (Button) findViewById(R.id.btnPee);
+        mTxtPeeLastReportedTime = (TextView) findViewById(R.id.txtPeeLastReportedTime);
+        mTxtPeeLastReportedPerson = (TextView) findViewById(R.id.txtPeeLastReportedPerson);
+        mTxtPeeTotalToday = (TextView) findViewById(R.id.txtPeeTotalToday);
+
+        mBtnEat = (Button) findViewById(R.id.btnEat);
+        mTxtEatLastReportedTime = (TextView) findViewById(R.id.txtEatLastReportedTime);
+        mTxtEatLastReportedPerson = (TextView) findViewById(R.id.txtEatLastReportedPerson);
+        mTxtEatTotalToday = (TextView) findViewById(R.id.txtEatTotalToday);
+
+        mBtnSleep = (Button) findViewById(R.id.btnSleep);
+        mTxtSleepLastReportedTime = (TextView) findViewById(R.id.txtSleepLastReportedTime);
+        mTxtSleepLastReportedPerson = (TextView) findViewById(R.id.txtSleepLastReportedPerson);
+        mTxtSleepTotalToday = (TextView) findViewById(R.id.txtSleepTotalToday);
+
+        mBtnWake = (Button) findViewById(R.id.btnWake);
+        mTxtWakeLastReportedTime = (TextView) findViewById(R.id.txtWakeLastReportedTime);
+        mTxtWakeLastReportedPerson = (TextView) findViewById(R.id.txtWakeLastReportedPerson);
+        mTxtWakeTotalToday = (TextView) findViewById(R.id.txtWakeTotalToday);
+
+        mBtnUndo = (Button) findViewById(R.id.btnUndo);
+
+        // todo get user login
+
+        // load profile
+        BabyProfile babyProfile = BabyProfile.defaultTest();
+        databaseHandle = new DatabaseHandle(babyProfile);
+        databaseHandle.setContext(this);
+
+        databaseHandle.addBabyEntry();
+
+        getSupportActionBar().setTitle(babyProfile.getBabyName());
+
+        setHandles();
+//        setUIInit();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter(Constants.lbmUIRefresh));
+    }
+
+    // Our handler for received Intents. This will be called whenever an Intent
+    // with an action named "custom-event-name" is broadcasted.
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra("message");
+            Constants.ActivityType activityType = Constants.ActivityType.valueOf(message);
+
+            setUI(activityType);
         }
-        displayMessage(getString(R.string.unknown_response));
+    };
+
+    @Override
+    protected void onDestroy() {
+        // Unregister since the activity is about to be closed.
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        super.onDestroy();
     }
 
-    /**
-     * This method starts a new "Activity" for users that are login.
-     *
-     */
-    private void loginUser(){
-        Intent loginIntent = new Intent(MainActivity.this, SigninActivity.class);
-        startActivity(loginIntent);
-        finish();
+    public String milliToString(long latestTimestamp) {
+        Calendar poopTime = Calendar.getInstance();
+        poopTime.setTimeInMillis(latestTimestamp);
+        return Constants.dateFormatLong.format(poopTime.getTime());
     }
 
-    /**
-     * Helper method to display a message on screen.
-     *
-     * @param message This is the string to display.
-     */
-    private void displayMessage(String message){
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+//    public void setUIInit() {
+//        mTxtBabyName.setText("Name: " + databaseHandle.getBabyProfile().getBabyName());
+//        mTxtBabyDob.setText("DOB: " + databaseHandle.getBabyProfile().getBabyDOB());
+//        mTxtNewDayTime.setText("Day Start: " + databaseHandle.getBabyProfile().getNewDayTimeString());
+//        mTxtCurrentUser.setText("User: " + databaseHandle.getCurrentUser());
+//    }
+
+    public void setUI(Constants.ActivityType activityType) {
+        setUICluster(mTxtPeeTotalToday, mTxtPeeLastReportedTime, mTxtPeeLastReportedPerson, databaseHandle.peedCounter);
+        setUICluster(mTxtPoopTotalToday, mTxtPoopLastReportedTime, mTxtPoopLastReportedPerson, databaseHandle.poopCounter);
+        setUICluster(mTxtEatTotalToday, mTxtEatLastReportedTime, mTxtEatLastReportedPerson, databaseHandle.eatCounter);
+        setUICluster(mTxtSleepTotalToday, mTxtSleepLastReportedTime, mTxtSleepLastReportedPerson, databaseHandle.sleepCounter);
+        setUICluster(mTxtWakeTotalToday, mTxtWakeLastReportedTime, mTxtWakeLastReportedPerson, databaseHandle.wakeCounter);
+
+        // override the sleep ones
+        mTxtSleepTotalToday.setText(sleepTimeFormat(databaseHandle.sleepLengthMs));
+        mTxtWakeTotalToday.setText(databaseHandle.sleepState.toString());
+
+        if (databaseHandle.sleepState == Constants.SleepWake.ASLEEP) {
+            mBtnSleep.setVisibility(View.INVISIBLE);
+            mBtnWake.setVisibility(View.VISIBLE);
+        } else {
+            mBtnSleep.setVisibility(View.VISIBLE);
+            mBtnWake.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public String sleepTimeFormat(long sleepLengthMs) {
+        String out;
+
+        Calendar newTime = Calendar.getInstance();
+        newTime.set(1970, Calendar.JANUARY, 1, 0, 0, 0);
+        long baseTime = newTime.getTimeInMillis() + sleepLengthMs;
+        out = Constants.dateFormatShort.format(baseTime);
+
+        return out;
+    }
+
+    public void setUICluster(TextView totalToday, TextView reportedTime, TextView reportedPerson,
+                             ActivityCounterHandle counterHandle) {
+        totalToday.setText(counterHandle.getTotalToday());
+        reportedTime.setText(counterHandle.getLastReportedTime());
+        reportedPerson.setText(counterHandle.getLastReportedPerson());
+    }
+
+    public void setHandles() {
+        mBtnPee.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addLogEntry(Constants.ActivityType.PEE);
+            }
+        });
+
+        mBtnPoop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addLogEntry(Constants.ActivityType.POOP);
+            }
+        });
+
+        mBtnEat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addLogEntry(Constants.ActivityType.EAT);
+            }
+        });
+
+        mBtnSleep.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addLogEntry(Constants.ActivityType.SLEEP);
+            }
+        });
+
+        mBtnWake.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addLogEntry(Constants.ActivityType.WAKE);
+            }
+        });
+
+        mBtnUndo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeLogEntry();
+            }
+        });
+    }
+
+    private void addLogEntry(Constants.ActivityType activityType){
+        databaseHandle.addLogEntry(activityType);
+    }
+
+    private void removeLogEntry(){
+        databaseHandle.removeLogEntry();
     }
 }
