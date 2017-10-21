@@ -185,9 +185,10 @@ public class DatabaseHandle {
         if (sleepCounter.firstToday > -1 || sleepCounter.log.size() > wakeCounter.log.size()) {
             int startInd = sleepCounter.firstToday;
 
+            startInd--;
+
             if (sleepCounter.log.size() > wakeCounter.log.size()) {
                 // currently asleep
-                startInd--;
 
                 if (sleepCounter.firstToday < 0)
                     startInd = sleepCounter.log.size() - 1;
