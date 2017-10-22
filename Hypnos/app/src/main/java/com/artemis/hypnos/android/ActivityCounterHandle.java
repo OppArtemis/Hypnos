@@ -56,7 +56,7 @@ public class ActivityCounterHandle {
         if (log.size() == 0) {
             return "Never";
         } else {
-            return Constants.dateFormatLong.format(log.get(log.size()-1).getTimeMs());
+            return Constants.dateFormatDisplayLong.format(log.get(log.size()-1).getTimeMs());
         }
     }
 

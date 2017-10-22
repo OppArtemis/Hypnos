@@ -13,7 +13,8 @@ public class Constants {
     enum RootNodeNames { BABY, LOG, USER }
 
     public final static SimpleDateFormat dateFormatLong = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    public final static SimpleDateFormat dateFormatShort = new SimpleDateFormat("HH:mm:ss");
+    public final static SimpleDateFormat dateFormatDisplayLong = new SimpleDateFormat("MMM dd HH:mm");
+    public final static SimpleDateFormat dateFormatDisplayShort = new SimpleDateFormat("HH:mm");
 
     public final static String lbmUIRefresh = "lbm_ui_refresh";
 
@@ -23,7 +24,7 @@ public class Constants {
         Calendar newTime = Calendar.getInstance();
         newTime.set(1970, Calendar.JANUARY, 1, 0, 0, 0);
         long baseTime = newTime.getTimeInMillis() + sleepLengthMs;
-        out = Constants.dateFormatShort.format(baseTime);
+        out = Constants.dateFormatDisplayShort.format(baseTime);
 
         return out;
     }

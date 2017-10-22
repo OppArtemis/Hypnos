@@ -89,8 +89,7 @@ public class DatabaseHandle {
         });
     }
 
-    public void addLogEntry(Constants.ActivityType activityType) {
-        long nowMs = Calendar.getInstance().getTimeInMillis();
+    public void addLogEntry(Constants.ActivityType activityType, long nowMs) {
         ActivityHandle newEntryToAdd = new ActivityHandle(activityType, currentUser, nowMs);
 
 //        DatabaseReference usersRef = refLogRootNode.push();
@@ -220,7 +219,7 @@ public class DatabaseHandle {
                 sleepLengthMs = sleepLengthMs + delta;
 
                 sleepList = sleepList +
-                                Constants.dateFormatLong.format(startTime) +
+                                Constants.dateFormatDisplayLong.format(startTime) +
                                " for " + Constants.sleepTimeFormat(delta) + "\n";
             }
         }

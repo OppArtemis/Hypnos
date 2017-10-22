@@ -1,5 +1,6 @@
 package com.artemis.hypnos.android;
 
+import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import java.util.Calendar;
 
@@ -102,7 +104,8 @@ public class MainActivity extends AppCompatActivity {
 
         mBtnUndo = findViewById(R.id.btnUndo);
         mTxtSleepList = findViewById(R.id.txtSleepList);
-        
+
+
         // todo get user login
 
         // load profile
@@ -144,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
     public String milliToString(long latestTimestamp) {
         Calendar poopTime = Calendar.getInstance();
         poopTime.setTimeInMillis(latestTimestamp);
-        return Constants.dateFormatLong.format(poopTime.getTime());
+        return Constants.dateFormatDisplayLong.format(poopTime.getTime());
     }
 
 //    public void setUIInit() {
@@ -186,35 +189,96 @@ public class MainActivity extends AppCompatActivity {
         mBtnPee.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addLogEntry(Constants.ActivityType.PEE);
+                Constants.ActivityType activityType = Constants.ActivityType.PEE;
+                long timeMs = Calendar.getInstance().getTimeInMillis();
+                addLogEntry(activityType, timeMs);
             }
         });
 
         mBtnPoop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addLogEntry(Constants.ActivityType.POOP);
+                Constants.ActivityType activityType = Constants.ActivityType.POOP;
+                long timeMs = Calendar.getInstance().getTimeInMillis();
+                addLogEntry(activityType, timeMs);
             }
         });
 
         mBtnEat.setOnClickListener(new View.OnClickListener() {
+            Constants.ActivityType activityType = Constants.ActivityType.EAT;
+
             @Override
             public void onClick(View view) {
-                addLogEntry(Constants.ActivityType.EAT);
+                Calendar mCurrentTime = Calendar.getInstance();
+                int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
+                int minute = mCurrentTime.get(Calendar.MINUTE);
+                TimePickerDialog mTimePicker
+                        = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        Calendar mPickedTime = Calendar.getInstance();
+                        mPickedTime.set(Calendar.HOUR_OF_DAY, selectedHour);
+                        mPickedTime.set(Calendar.MINUTE, selectedMinute);
+                        mPickedTime.set(Calendar.SECOND, 0);
+                        long timeMs = mPickedTime.getTimeInMillis();
+
+                        addLogEntry(activityType, timeMs);
+                    }
+                }, hour, minute, true);//Yes 24 hour time
+                mTimePicker.setTitle("Select Time");
+                mTimePicker.show();
             }
         });
 
         mBtnSleep.setOnClickListener(new View.OnClickListener() {
+            Constants.ActivityType activityType = Constants.ActivityType.SLEEP;
+
             @Override
             public void onClick(View view) {
-                addLogEntry(Constants.ActivityType.SLEEP);
+                Calendar mCurrentTime = Calendar.getInstance();
+                int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
+                int minute = mCurrentTime.get(Calendar.MINUTE);
+                TimePickerDialog mTimePicker
+                        = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        Calendar mPickedTime = Calendar.getInstance();
+                        mPickedTime.set(Calendar.HOUR_OF_DAY, selectedHour);
+                        mPickedTime.set(Calendar.MINUTE, selectedMinute);
+                        mPickedTime.set(Calendar.SECOND, 0);
+                        long timeMs = mPickedTime.getTimeInMillis();
+
+                        addLogEntry(activityType, timeMs);
+                    }
+                }, hour, minute, true);//Yes 24 hour time
+                mTimePicker.setTitle("Select Time");
+                mTimePicker.show();
             }
         });
 
         mBtnWake.setOnClickListener(new View.OnClickListener() {
+            Constants.ActivityType activityType = Constants.ActivityType.WAKE;
+
             @Override
             public void onClick(View view) {
-                addLogEntry(Constants.ActivityType.WAKE);
+                Calendar mCurrentTime = Calendar.getInstance();
+                int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
+                int minute = mCurrentTime.get(Calendar.MINUTE);
+                TimePickerDialog mTimePicker
+                        = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        Calendar mPickedTime = Calendar.getInstance();
+                        mPickedTime.set(Calendar.HOUR_OF_DAY, selectedHour);
+                        mPickedTime.set(Calendar.MINUTE, selectedMinute);
+                        mPickedTime.set(Calendar.SECOND, 0);
+                        long timeMs = mPickedTime.getTimeInMillis();
+
+                        addLogEntry(activityType, timeMs);
+                    }
+                }, hour, minute, true);//Yes 24 hour time
+                mTimePicker.setTitle("Select Time");
+                mTimePicker.show();
             }
         });
 
@@ -226,8 +290,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void addLogEntry(Constants.ActivityType activityType){
-        databaseHandle.addLogEntry(activityType);
+    private void addLogEntry(Constants.ActivityType activityType, long timeMs){
+        databaseHandle.addLogEntry(activityType, timeMs);
     }
 
     private void removeLogEntry(){
