@@ -1,5 +1,7 @@
 package com.artemis.hypnos.android;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -10,8 +12,9 @@ import java.util.Calendar;
 public class Constants {
     enum ActivityType { PEE, POOP, EAT, SLEEP, WAKE }
     enum SleepWake { ASLEEP, AWAKE }
-    enum RootNodeNames { BABY, LOG, USER }
+    enum RootNodeNames {BABY2, LOG2, USER2}
 
+    public final static SimpleDateFormat dateFormatDate = new SimpleDateFormat("yyyy-MM-dd");
     public final static SimpleDateFormat dateFormatLong = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public final static SimpleDateFormat dateFormatDisplayLong = new SimpleDateFormat("MMM dd HH:mm");
     public final static SimpleDateFormat dateFormatDisplayShort = new SimpleDateFormat("HH:mm");
@@ -27,5 +30,26 @@ public class Constants {
         out = Constants.dateFormatDisplayShort.format(baseTime);
 
         return out;
+    }
+
+    public static String hashFunction(String hashString) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(hashString.getBytes());
+
+            byte byteData[] = md.digest();
+
+            //convert the byte to hex format method 1
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < byteData.length; i++) {
+                sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+            }
+
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

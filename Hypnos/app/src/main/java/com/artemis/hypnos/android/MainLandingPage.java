@@ -75,11 +75,9 @@ public class MainLandingPage extends AppCompatActivity {
 
         // RC_SIGN_IN is the request code you passed into startActivityForResult
         if (requestCode == RC_SIGN_IN) {
-
             if(resultCode == RESULT_OK){
                 loginUser();
             } else {
-
                 IdpResponse response = IdpResponse.fromResultIntent(data);
                 if (resultCode == RESULT_CANCELED) {
                     displayMessage(getString(R.string.signin_failed));

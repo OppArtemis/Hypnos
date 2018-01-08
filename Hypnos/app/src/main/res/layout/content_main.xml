@@ -8,7 +8,7 @@
     tools:context="com.artemis.hypnos.android.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <!-- BABY DEMOGRAPHICS -->
+    <!-- BABY2 DEMOGRAPHICS -->
     <!--<TextView-->
         <!--android:id="@+id/txtBabyName"-->
         <!--android:layout_width="wrap_content"-->

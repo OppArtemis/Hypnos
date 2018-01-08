@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,9 +33,13 @@ public class DatabaseHandle {
     }
 
     private BabyProfile babyProfile;
-    private String currentUser = "Joanna Wu";
+    private UserProfile userProfile;
+
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase mDatabase;
 
     DatabaseReference refBabyRootNode;
+    DatabaseReference refUserRootNode;
     DatabaseReference refLogRootNode;
     ActivityCounterHandle poopCounter = new ActivityCounterHandle(Constants.ActivityType.POOP);
     ActivityCounterHandle peedCounter = new ActivityCounterHandle(Constants.ActivityType.PEE);
@@ -48,26 +51,155 @@ public class DatabaseHandle {
     Constants.SleepWake sleepState = Constants.SleepWake.AWAKE;
     String sleepList = "";
 
-    DatabaseHandle(BabyProfile babyProfile) {
-        this.babyProfile = babyProfile;
+    DatabaseHandle(final BabyProfile babyProfile) {
+        // connect to Firebase
+        mDatabase = FirebaseDatabase.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        refBabyRootNode = database.getReference(Constants.RootNodeNames.BABY.toString() + "/" + babyProfile.getBabyId() + "/");
-        refLogRootNode = database.getReference(Constants.RootNodeNames.LOG.toString() + "/" + babyProfile.getBabyId() + "/");
+//        userProfile = new UserProfile(mAuth.getCurrentUser());
 
-        addLogListener();
+        // todo // FIXME: 01/07/2018
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
-        currentUser = user.getDisplayName();
+
+        // search database for current user, insert if doesn't exist
+        onLoadcheckUser();
+
+
+
+
+
+
+
+        // set up the user profile
+//        userProfile = new UserProfile(mAuth.getCurrentUser());
+//        userProfile.connectedBabies = (babyProfile.getBabyId());
+
+//
+//        DatabaseReference usersRef = refLogRootNode.child(String.valueOf(nowMs));
+//        usersRef.setValue(newEntryToAdd);
+
+        // setup the basic nodes if missing TODO FIX
+//        mDatabase.getReference().setValue(Constants.RootNodeNames.USER2.toString());
+
+//        mDatabase.getReference().child("test").setValue("test");
+//        mDatabase.getReference().child("test2").child("test2").setValue("test2");
+
+//        mDatabase.getReference().child(Constants.RootNodeNames.USER2.toString()).child(user.getEmail()).setValue(userProfile);
+//        mDatabase.getReference()(Constants.RootNodeNames.USER2.toString() + "/" + user.getEmail() + "/").setValue(userProfile);
+
+//        // TODO load the current logged in user's profile
+//
+//        // create references to the user profile
+//        refUserRootNode = mDatabase.getReference(Constants.RootNodeNames.USER2.toString() + "/" + user.getEmail() + "/");
+//
+//        // load baby and log data if exist
+//        refBabyRootNode = mDatabase.getReference(Constants.RootNodeNames.BABY2.toString() + "/" + babyProfile.getBabyId() + "/");
+//        refLogRootNode = mDatabase.getReference(Constants.RootNodeNames.LOG2.toString() + "/" + babyProfile.getBabyId() + "/");
+////
+////        addLogListener();
     }
 
+    public void onLoadcheckUser() {
+        final DatabaseReference userRoot = mDatabase.getReference().child(Constants.RootNodeNames.USER2.toString());
+        userRoot.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                FirebaseUser user = mAuth.getCurrentUser();
+                UserProfile newUserProfileToCheck = new UserProfile(user);
+                String currUserId = newUserProfileToCheck.getUserId();
+
+                for (DataSnapshot child: dataSnapshot.getChildren()) {
+                    UserProfile newPost = child.getValue(UserProfile.class);
+
+                    if (newPost.getUserId().equals(currUserId)) {
+                        userProfile = newPost;
+                        break;
+                    }
+                }
+
+                if (userProfile == null) {
+                    userProfile = new UserProfile(mAuth.getCurrentUser());
+                    BabyProfile newBabyProfile = BabyProfile.defaultTest();
+                    userProfile.addBabies(newBabyProfile.getBabyId());
+                    userRoot.child(userProfile.getUserId()).setValue(userProfile);
+                }
+
+                refUserRootNode = mDatabase.getReference()
+                        .child(Constants.RootNodeNames.USER2.toString())
+                        .child(userProfile.getUserId());
+
+                onLoadcheckBaby();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //Handle possible errors.
+            }
+        });
+    }
+
+    public void onLoadcheckBaby() {
+        // search database for current baby, insert if doesn't exist
+        final DatabaseReference babyRoot = mDatabase.getReference().child(Constants.RootNodeNames.BABY2.toString());
+        babyRoot.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String currBabyId = userProfile.getConnectedBabies().get(0);
+
+                for (DataSnapshot child: dataSnapshot.getChildren()) {
+                    BabyProfile newPost = child.getValue(BabyProfile.class);
+                    if (newPost.getBabyId().equals(currBabyId)) {
+                        babyProfile = newPost;
+                    }
+                }
+
+                if (babyProfile == null) {
+                    babyProfile = BabyProfile.defaultTest(); // todo fix=
+                    babyRoot.child(babyProfile.getBabyId()).setValue(babyProfile);
+                }
+
+                refBabyRootNode = mDatabase.getReference(Constants.RootNodeNames.BABY2.toString())
+                        .child(babyProfile.getBabyId());
+
+                refLogRootNode = mDatabase.getReference(Constants.RootNodeNames.LOG2.toString())
+                        .child(babyProfile.getBabyId());
+
+                addLogListener();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //Handle possible errors.
+            }
+        });
+    }
+
+
+//    DatabaseHandle(BabyProfile babyProfile) {
+//        this.babyProfile = babyProfile;
+//
+//        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        refBabyRootNode = database.getReference(Constants.RootNodeNames.BABY2.toString() + "/" + babyProfile.getBabyId() + "/");
+//        refUserRootNode = database.getReference(Constants.RootNodeNames.USER2.toString() + "/" + user.getBabyId() + "/");
+//        refLogRootNode = database.getReference(Constants.RootNodeNames.LOG2.toString() + "/" + babyProfile.getBabyId() + "/");
+//
+//        addLogListener();
+//
+//        mAuth = FirebaseAuth.getInstance();
+//        FirebaseUser user = mAuth.getCurrentUser();
+//        currentUser = user.getDisplayName();
+//    }
+
     public BabyProfile getBabyProfile() { return babyProfile; }
-    public String getCurrentUser() { return currentUser; }
+    public String getCurrentUser() { return userProfile.getUserName(); }
 
     public void addBabyEntry() {
         DatabaseReference usersRef = refBabyRootNode;
         usersRef.setValue(babyProfile);
+    }
+
+    public void addUserEntry() {
+
     }
 
     public void removeLogEntry() {
@@ -90,10 +222,11 @@ public class DatabaseHandle {
     }
 
     public void addLogEntry(Constants.ActivityType activityType, long nowMs) {
-        ActivityHandle newEntryToAdd = new ActivityHandle(activityType, currentUser, nowMs);
+        ActivityHandle newEntryToAdd = new ActivityHandle(activityType, userProfile.getUserName(), nowMs);
 
 //        DatabaseReference usersRef = refLogRootNode.push();
-        DatabaseReference usersRef = refLogRootNode.child(String.valueOf(nowMs));
+//        DatabaseReference usersRef = refLogRootNode.child(String.valueOf(nowMs));
+        DatabaseReference usersRef = refLogRootNode.child(Constants.dateFormatDate.format(nowMs)).child(activityType.name());
         usersRef.setValue(newEntryToAdd);
     }
 
@@ -193,6 +326,10 @@ public class DatabaseHandle {
             int startInd = sleepCounter.firstToday;
 
             startInd--;
+
+            if (startInd < 0) {
+                startInd = 0;
+            }
 
             if (sleepCounter.log.size() > wakeCounter.log.size()) {
                 // currently asleep

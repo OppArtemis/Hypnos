@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         databaseHandle = new DatabaseHandle(babyProfile);
         databaseHandle.setContext(this);
 
-        databaseHandle.addBabyEntry();
+//        databaseHandle.addBabyEntry();
 
         getSupportActionBar().setTitle(babyProfile.getBabyName());
 

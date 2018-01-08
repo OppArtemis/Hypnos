@@ -1,7 +1,5 @@
 package com.artemis.hypnos.android;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -19,13 +17,17 @@ public class BabyProfile {
     private String babyId;
     private List<String> users = new ArrayList<>();
 
+    BabyProfile() {
+        generateId();
+    }
+
     public static BabyProfile defaultTest() {
         BabyProfile tobias = new BabyProfile();
         tobias.babyName = "Tobias Lin";
         tobias.babyDOB.set(2017, Calendar.MAY, 3, 0, 0, 0);
         tobias.setNewDayTime(0, 0);
+        tobias.generateId();
 
-        tobias.hashFunction();
         tobias.addUsers("jlin815@gmail.com");
         tobias.addUsers("jellobaby@gmail.com");
 
@@ -40,28 +42,9 @@ public class BabyProfile {
         this.newDayTime.set(Calendar.SECOND, 0); // new day is midnight
     }
 
-    public String hashFunction() {
-        try {
-            String hashString = babyName + ", " + Constants.dateFormatLong.format(babyDOB.getTime());
-
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(hashString.getBytes());
-
-            byte byteData[] = md.digest();
-
-            //convert the byte to hex format method 1
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < byteData.length; i++) {
-                sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
-            }
-
-            babyId = sb.toString();
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+    public void generateId() {
+        String hashString = babyName + Constants.dateFormatLong.format(babyDOB.getTime());
+        this.babyId = Constants.hashFunction(hashString);
     }
 
     public void addUsers(String userEmail) { users.add(userEmail); }
