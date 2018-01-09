@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.google.api.client.util.Data;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -15,7 +16,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Facilitates all interaction with Firebase
@@ -41,66 +44,25 @@ public class DatabaseHandle {
     DatabaseReference refBabyRootNode;
     DatabaseReference refUserRootNode;
     DatabaseReference refLogRootNode;
-    ActivityCounterHandle poopCounter = new ActivityCounterHandle(Constants.ActivityType.POOP);
-    ActivityCounterHandle peedCounter = new ActivityCounterHandle(Constants.ActivityType.PEE);
-    ActivityCounterHandle eatCounter = new ActivityCounterHandle(Constants.ActivityType.EAT);
-    ActivityCounterHandle sleepCounter = new ActivityCounterHandle(Constants.ActivityType.SLEEP);
-    ActivityCounterHandle wakeCounter = new ActivityCounterHandle(Constants.ActivityType.WAKE);
+
+    List<DatabaseReference> refLogSubrootNodes;
+    List<ActivityCounterHandle> babyLogCounter;
 
     long sleepLengthMs = 0;
-    Constants.SleepWake sleepState = Constants.SleepWake.AWAKE;
     String sleepList = "";
 
-    DatabaseHandle(final BabyProfile babyProfile) {
+    DatabaseHandle() {
         // connect to Firebase
         mDatabase = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
-//        userProfile = new UserProfile(mAuth.getCurrentUser());
-
-        // todo // FIXME: 01/07/2018
-
-
         // search database for current user, insert if doesn't exist
         onLoadcheckUser();
-
-
-
-
-
-
-
-        // set up the user profile
-//        userProfile = new UserProfile(mAuth.getCurrentUser());
-//        userProfile.connectedBabies = (babyProfile.getBabyId());
-
-//
-//        DatabaseReference usersRef = refLogRootNode.child(String.valueOf(nowMs));
-//        usersRef.setValue(newEntryToAdd);
-
-        // setup the basic nodes if missing TODO FIX
-//        mDatabase.getReference().setValue(Constants.RootNodeNames.USER2.toString());
-
-//        mDatabase.getReference().child("test").setValue("test");
-//        mDatabase.getReference().child("test2").child("test2").setValue("test2");
-
-//        mDatabase.getReference().child(Constants.RootNodeNames.USER2.toString()).child(user.getEmail()).setValue(userProfile);
-//        mDatabase.getReference()(Constants.RootNodeNames.USER2.toString() + "/" + user.getEmail() + "/").setValue(userProfile);
-
-//        // TODO load the current logged in user's profile
-//
-//        // create references to the user profile
-//        refUserRootNode = mDatabase.getReference(Constants.RootNodeNames.USER2.toString() + "/" + user.getEmail() + "/");
-//
-//        // load baby and log data if exist
-//        refBabyRootNode = mDatabase.getReference(Constants.RootNodeNames.BABY2.toString() + "/" + babyProfile.getBabyId() + "/");
-//        refLogRootNode = mDatabase.getReference(Constants.RootNodeNames.LOG2.toString() + "/" + babyProfile.getBabyId() + "/");
-////
-////        addLogListener();
     }
 
     public void onLoadcheckUser() {
         final DatabaseReference userRoot = mDatabase.getReference().child(Constants.RootNodeNames.USER2.toString());
+
         userRoot.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -164,7 +126,23 @@ public class DatabaseHandle {
                 refLogRootNode = mDatabase.getReference(Constants.RootNodeNames.LOG2.toString())
                         .child(babyProfile.getBabyId());
 
-                addLogListener();
+                refLogSubrootNodes = new ArrayList<>();
+                babyLogCounter = new ArrayList<>();
+                for (int i = 0; i < babyProfile.getLogTypes().size(); i++) {
+                    String currLogName = babyProfile.getLogTypes().get(i).getActivityName().toString();
+
+                    DatabaseReference currRef = mDatabase.getReference(Constants.RootNodeNames.LOG2.toString())
+                            .child(babyProfile.getBabyId())
+                            .child(currLogName);
+                    refLogSubrootNodes.add(currRef);
+
+                    ActivityCounterHandle currCounter = new ActivityCounterHandle(currLogName);
+                    babyLogCounter.add(currCounter);
+
+                    addLogListener(babyProfile.getLogTypes().get(i), currRef, currCounter);
+                }
+
+                lbmNewBabyProfileLoaded();
             }
 
             @Override
@@ -174,33 +152,9 @@ public class DatabaseHandle {
         });
     }
 
-
-//    DatabaseHandle(BabyProfile babyProfile) {
-//        this.babyProfile = babyProfile;
-//
-//        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        refBabyRootNode = database.getReference(Constants.RootNodeNames.BABY2.toString() + "/" + babyProfile.getBabyId() + "/");
-//        refUserRootNode = database.getReference(Constants.RootNodeNames.USER2.toString() + "/" + user.getBabyId() + "/");
-//        refLogRootNode = database.getReference(Constants.RootNodeNames.LOG2.toString() + "/" + babyProfile.getBabyId() + "/");
-//
-//        addLogListener();
-//
-//        mAuth = FirebaseAuth.getInstance();
-//        FirebaseUser user = mAuth.getCurrentUser();
-//        currentUser = user.getDisplayName();
-//    }
-
     public BabyProfile getBabyProfile() { return babyProfile; }
+
     public String getCurrentUser() { return userProfile.getUserName(); }
-
-    public void addBabyEntry() {
-        DatabaseReference usersRef = refBabyRootNode;
-        usersRef.setValue(babyProfile);
-    }
-
-    public void addUserEntry() {
-
-    }
 
     public void removeLogEntry() {
         Query lastQuery = refLogRootNode.limitToLast(1);
@@ -221,25 +175,26 @@ public class DatabaseHandle {
         });
     }
 
-    public void addLogEntry(Constants.ActivityType activityType, long nowMs) {
+    public void addLogEntry(String activityType, long nowMs) {
         ActivityHandle newEntryToAdd = new ActivityHandle(activityType, userProfile.getUserName(), nowMs);
+        DatabaseReference pathToAdd = refLogRootNode.child(activityType).child(Long.toString(nowMs));
 
-//        DatabaseReference usersRef = refLogRootNode.push();
-//        DatabaseReference usersRef = refLogRootNode.child(String.valueOf(nowMs));
-        DatabaseReference usersRef = refLogRootNode.child(Constants.dateFormatDate.format(nowMs)).child(activityType.name());
-        usersRef.setValue(newEntryToAdd);
+        // check the state for this activity. if the activity is switching to state '0', then make
+        // a new entry. otherwise, find the existing one and update it
+        for (int i = 0; i < babyProfile.getLogTypes().size(); i++) {
+            if (babyProfile.getLogTypes().get(i).getActivityName().equals(activityType.toString())) {
+                babyProfile.getLogTypes().get(i).addLogEntry(newEntryToAdd, pathToAdd);
+                break;
+            }
+        }
     }
 
-    public void addLogListener() {
-        // Get a reference to our posts
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference logEntries = refLogRootNode;
-
+    public void addLogListener(final ActivityLogTypes logType, final DatabaseReference logSubnode, final ActivityCounterHandle counter) {
         // Attach a listener to read the data at our posts reference
-        logEntries.addValueEventListener(new ValueEventListener() {
+        logSubnode.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                   onDataChangeFirebaseEvent(dataSnapshot);
+                onDataChangeFirebaseEvent(dataSnapshot, logType, counter);
             }
 
             @Override
@@ -247,148 +202,37 @@ public class DatabaseHandle {
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });
-
-//        logEntries.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
-//                Post newPost = dataSnapshot.getValue(Post.class);
-//                System.out.println("Author: " + newPost.author);
-//                System.out.println("Title: " + newPost.title);
-//                System.out.println("Previous Post ID: " + prevChildKey);
-//            }
-//
-//            @Override
-//            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {}
-//
-//            @Override
-//            public void onChildRemoved(DataSnapshot dataSnapshot) {}
-//
-//            @Override
-//            public void onChildMoved(DataSnapshot dataSnapshot, String prevChildKey) {}
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {}
-//        });
     }
 
-    public void onDataChangeFirebaseEvent(DataSnapshot dataSnapshot) {
-        long latestLastReportedTime = 0;
-        String latestLastReportedPerson = "";
-        int counterTotalToday = 0;
-
-        peedCounter.reset();
-        poopCounter.reset();
-        eatCounter.reset();
-        sleepCounter.reset();
-        wakeCounter.reset();
+    public void onDataChangeFirebaseEvent(DataSnapshot dataSnapshot, ActivityLogTypes logType, ActivityCounterHandle counter) {
+        counter.reset();
 
         for (DataSnapshot child: dataSnapshot.getChildren()) {
             ActivityHandle newPost = child.getValue(ActivityHandle.class);
-            ActivityCounterHandle activityCounterHandle = returnHandle(newPost.getActivityType());
-            activityCounterHandle.push(newPost);
+            counter.push(newPost);
         }
 
-//        peedCounter.sortLog();
-//        poopCounter.sortLog();
-//        sleepCounter.sortLog();
-//        wakeCounter.sortLog();
+        long profileNewDayLimit = babyProfile.newDayTimeLong();
+        counter.findTotalToday(profileNewDayLimit);
 
-        long profileNewDayLimit = babyProfile.getNewDayTimeLong();
-        peedCounter.findTotalToday(profileNewDayLimit);
-        poopCounter.findTotalToday(profileNewDayLimit);
-        eatCounter.findTotalToday(profileNewDayLimit);
-        sleepCounter.findTotalToday(profileNewDayLimit);
-        wakeCounter.findTotalToday(profileNewDayLimit);
-
-        // perform sleep calculations
-        calcSleepState();
-
-        lbmUpdateUI(Constants.ActivityType.POOP);
+        lbmUpdateUI(logType.getActivityName());
     }
 
-    public void calcSleepState() {
-        if (sleepCounter.log.size() == wakeCounter.log.size()) {
-            sleepState = Constants.SleepWake.AWAKE;
-            calcSleepLength();
-        } else if (sleepCounter.log.size() > wakeCounter.log.size()) {
-            // one entry in sleep log
-            sleepState = Constants.SleepWake.ASLEEP;
-            calcSleepLength();
-        } else {
-            // there's more entries in wake than sleep. might not be done loading yet
-        }
+    public List<ActivityCounterHandle> getBabyLogCounter() {
+        return babyLogCounter;
     }
 
-    public void calcSleepLength() {
-        sleepLengthMs = 0; // ms -> s -> m
-        sleepList = "";
-        if (sleepCounter.firstToday > -1 || sleepCounter.log.size() > wakeCounter.log.size()) {
-            int startInd = sleepCounter.firstToday;
-
-            startInd--;
-
-            if (startInd < 0) {
-                startInd = 0;
-            }
-
-            if (sleepCounter.log.size() > wakeCounter.log.size()) {
-                // currently asleep
-
-                if (sleepCounter.firstToday < 0)
-                    startInd = sleepCounter.log.size() - 1;
-            }
-
-            for (int i = startInd; i < sleepCounter.log.size(); i++) {
-                long startTime;
-                long endTime;
-
-                if (sleepCounter.log.get(i).getTimeMs() < babyProfile.getNewDayTimeLong())
-                    startTime = babyProfile.getNewDayTimeLong();
-                else
-                    startTime = sleepCounter.log.get(i).getTimeMs();
-
-                if (i > wakeCounter.log.size() - 1)
-                    endTime = Calendar.getInstance().getTimeInMillis();
-                else
-                    endTime = wakeCounter.log.get(i).getTimeMs();
-
-                long delta = endTime - startTime;
-                sleepLengthMs = sleepLengthMs + delta;
-
-                sleepList = sleepList +
-                                Constants.dateFormatDisplayLong.format(startTime) +
-                               " for " + Constants.sleepTimeFormat(delta) + "\n";
-            }
-        }
+    private void lbmNewBabyProfileLoaded() {
+        Log.d("sender", "Broadcasting message");
+        Intent intent = new Intent(Constants.lbmNewBabyProfileLoaded);
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 
-    public ActivityCounterHandle returnHandle(Constants.ActivityType activityType) {
-        switch (activityType) {
-            case PEE:
-                return peedCounter;
-
-            case POOP:
-                return poopCounter;
-
-            case EAT:
-                return eatCounter;
-
-            case SLEEP:
-                return sleepCounter;
-
-            case WAKE:
-                return wakeCounter;
-
-            default:
-                return null;
-        }
-    }
-
-    private void lbmUpdateUI(Constants.ActivityType activityType) {
+    private void lbmUpdateUI(String activityType) {
         Log.d("sender", "Broadcasting message");
         Intent intent = new Intent(Constants.lbmUIRefresh);
         // You can also include some extra data.
-        intent.putExtra("message", activityType.toString());
+        intent.putExtra("message", activityType);
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 }

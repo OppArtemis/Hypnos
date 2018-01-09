@@ -9,12 +9,13 @@ import java.util.List;
  */
 
 public class ActivityCounterHandle {
-    Constants.ActivityType currentActivityType;
+    String currentActivityType;
     List<ActivityHandle> log = new ArrayList<>();
+
     int totalToday; // # of times for poo/pee, length of reportedTimeMs in [min] for sleep
     int firstToday;
 
-    ActivityCounterHandle(Constants.ActivityType currentActivityType) {
+    ActivityCounterHandle(String currentActivityType) {
         this.currentActivityType = currentActivityType;
     }
 
@@ -40,7 +41,7 @@ public class ActivityCounterHandle {
 
         for (int i = 0; i < log.size(); i++) {
             ActivityHandle newPost = log.get(i);
-            long currentLastReportedTime = newPost.getTimeMs();
+            long currentLastReportedTime = newPost.getTimeStartMs();
 
             if (currentLastReportedTime > profileNewDayLimit) {
                 if (totalToday == 0) {
@@ -56,7 +57,7 @@ public class ActivityCounterHandle {
         if (log.size() == 0) {
             return "Never";
         } else {
-            return Constants.dateFormatDisplayLong.format(log.get(log.size()-1).getTimeMs());
+            return Constants.dateFormatDisplayLong.format(log.get(log.size()-1).getTimeStartMs());
         }
     }
 
@@ -64,7 +65,7 @@ public class ActivityCounterHandle {
         if (log.size() == 0) {
             return "";
         } else {
-            return log.get(log.size()-1).getUser();
+            return log.get(log.size()-1).getReportedUser();
         }
     }
 

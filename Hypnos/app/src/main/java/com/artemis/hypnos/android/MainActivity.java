@@ -109,13 +109,12 @@ public class MainActivity extends AppCompatActivity {
         // todo get user login
 
         // load profile
-        BabyProfile babyProfile = BabyProfile.defaultTest();
-        databaseHandle = new DatabaseHandle(babyProfile);
+        databaseHandle = new DatabaseHandle();
         databaseHandle.setContext(this);
 
 //        databaseHandle.addBabyEntry();
 
-        getSupportActionBar().setTitle(babyProfile.getBabyName());
+//        getSupportActionBar().setTitle(databaseHandle.getBabyProfile().getBabyName());
 
         setHandles();
 //        setUIInit();
@@ -131,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
             String message = intent.getStringExtra("message");
-            Constants.ActivityType activityType = Constants.ActivityType.valueOf(message);
+            String activityType = String.valueOf(message);
 
             setUI(activityType);
         }
@@ -157,25 +156,25 @@ public class MainActivity extends AppCompatActivity {
 //        mTxtCurrentUser.setText("User: " + databaseHandle.getCurrentUser());
 //    }
 
-    public void setUI(Constants.ActivityType activityType) {
-        setUICluster(mTxtPeeTotalToday, mTxtPeeLastReportedTime, mTxtPeeLastReportedPerson, databaseHandle.peedCounter);
-        setUICluster(mTxtPoopTotalToday, mTxtPoopLastReportedTime, mTxtPoopLastReportedPerson, databaseHandle.poopCounter);
-        setUICluster(mTxtEatTotalToday, mTxtEatLastReportedTime, mTxtEatLastReportedPerson, databaseHandle.eatCounter);
-        setUICluster(mTxtSleepTotalToday, mTxtSleepLastReportedTime, mTxtSleepLastReportedPerson, databaseHandle.sleepCounter);
-        setUICluster(mTxtWakeTotalToday, mTxtWakeLastReportedTime, mTxtWakeLastReportedPerson, databaseHandle.wakeCounter);
-
-        // override the sleep ones
-        mTxtSleepTotalToday.setText(Constants.sleepTimeFormat(databaseHandle.sleepLengthMs));
-        mTxtWakeTotalToday.setText(databaseHandle.sleepState.toString());
-        mTxtSleepList.setText(databaseHandle.sleepList);
-
-        if (databaseHandle.sleepState == Constants.SleepWake.ASLEEP) {
-            mBtnSleep.setVisibility(View.INVISIBLE);
-            mBtnWake.setVisibility(View.VISIBLE);
-        } else {
-            mBtnSleep.setVisibility(View.VISIBLE);
-            mBtnWake.setVisibility(View.INVISIBLE);
-        }
+    public void setUI(String activityType) {
+        setUICluster(mTxtPeeTotalToday, mTxtPeeLastReportedTime, mTxtPeeLastReportedPerson, databaseHandle.getBabyLogCounter().get(0));
+        setUICluster(mTxtPoopTotalToday, mTxtPoopLastReportedTime, mTxtPoopLastReportedPerson, databaseHandle.getBabyLogCounter().get(1));
+        setUICluster(mTxtEatTotalToday, mTxtEatLastReportedTime, mTxtEatLastReportedPerson, databaseHandle.getBabyLogCounter().get(2));
+        setUICluster(mTxtSleepTotalToday, mTxtSleepLastReportedTime, mTxtSleepLastReportedPerson, databaseHandle.getBabyLogCounter().get(3));
+        setUICluster(mTxtWakeTotalToday, mTxtWakeLastReportedTime, mTxtWakeLastReportedPerson, databaseHandle.getBabyLogCounter().get(3));
+//
+//        // override the sleep ones
+//        mTxtSleepTotalToday.setText(Constants.sleepTimeFormat(databaseHandle.sleepLengthMs));
+//        mTxtWakeTotalToday.setText(databaseHandle.sleepState.toString());
+//        mTxtSleepList.setText(databaseHandle.sleepList);
+//
+//        if (databaseHandle.sleepState == Constants.SleepWake.ASLEEP) {
+//            mBtnSleep.setVisibility(View.INVISIBLE);
+//            mBtnWake.setVisibility(View.VISIBLE);
+//        } else {
+//            mBtnSleep.setVisibility(View.VISIBLE);
+//            mBtnWake.setVisibility(View.INVISIBLE);
+//        }
     }
 
     public void setUICluster(TextView totalToday, TextView reportedTime, TextView reportedPerson,
@@ -189,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
         mBtnPee.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Constants.ActivityType activityType = Constants.ActivityType.PEE;
+                String activityType = "PEE";
                 long timeMs = Calendar.getInstance().getTimeInMillis();
                 addLogEntry(activityType, timeMs);
             }
@@ -198,14 +197,14 @@ public class MainActivity extends AppCompatActivity {
         mBtnPoop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Constants.ActivityType activityType = Constants.ActivityType.POOP;
+                String activityType = "POOP";
                 long timeMs = Calendar.getInstance().getTimeInMillis();
                 addLogEntry(activityType, timeMs);
             }
         });
 
         mBtnEat.setOnClickListener(new View.OnClickListener() {
-            Constants.ActivityType activityType = Constants.ActivityType.EAT;
+            String activityType = "EAT";
 
             @Override
             public void onClick(View view) {
@@ -231,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mBtnSleep.setOnClickListener(new View.OnClickListener() {
-            Constants.ActivityType activityType = Constants.ActivityType.SLEEP;
+            String activityType = "SLEEP";
 
             @Override
             public void onClick(View view) {
@@ -257,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mBtnWake.setOnClickListener(new View.OnClickListener() {
-            Constants.ActivityType activityType = Constants.ActivityType.WAKE;
+            String activityType = "SLEEP";
 
             @Override
             public void onClick(View view) {
@@ -290,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void addLogEntry(Constants.ActivityType activityType, long timeMs){
+    private void addLogEntry(String activityType, long timeMs){
         databaseHandle.addLogEntry(activityType, timeMs);
     }
 

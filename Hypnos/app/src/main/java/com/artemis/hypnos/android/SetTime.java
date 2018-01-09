@@ -24,7 +24,7 @@ public class SetTime implements View.OnFocusChangeListener, TimePickerDialog.OnT
 //        this.ctx = ctx;
 //    }
 //
-//    public long getTimeMs() {
+//    public long getTimeStartMs() {
 //        return timeMs;
 //    }
 //

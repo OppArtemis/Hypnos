@@ -16,7 +16,7 @@
     <string name="logout">LOGOUT</string>
     <string name="update_location">Current Location</string>
     <string name="sign_out_error">Failed to sign out</string>
-    <string name="user_deletion_error">Failed to delete user</string>
+    <string name="user_deletion_error">Failed to delete reportedUser</string>
     <string name="start_search">Start search</string>
 
 </resources>

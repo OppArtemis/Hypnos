@@ -1,34 +1,53 @@
 package com.artemis.hypnos.android;
 
-import java.util.Calendar;
-
 /**
  * Created by jf2lin on 09/20/2017.
  */
 
 public class ActivityHandle implements Comparable<ActivityHandle> {
-    private Constants.ActivityType activityType;
-    private String user;
-    private long timeMs;
+    private String activityType;
+    private String reportedUser;
+
+    private long timeStartMs;
+    private long timeEndMs;
+    private String notes;
 
     ActivityHandle() {
 
     }
 
-    ActivityHandle(Constants.ActivityType activityType, String user, long time) {
+    ActivityHandle(String activityType, String reportedUser, long time) {
         this.activityType = activityType;
-        this.user = user;
-        this.timeMs = time;
+        this.reportedUser = reportedUser;
+        this.timeStartMs = time;
     }
 
-    public Constants.ActivityType getActivityType() { return activityType; }
+    public String getActivityType() {
+        return activityType;
+    }
 
-    public String getUser() { return user; }
+    public String getReportedUser() { return reportedUser; }
 
-    public long getTimeMs() { return timeMs; }
+    public long getTimeStartMs() { return timeStartMs; }
+
+    public long getTimeEndMs() {
+        return timeEndMs;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
 
     public int compareTo(ActivityHandle anotherInstance) {
-        long diff = this.getTimeMs() - anotherInstance.getTimeMs();
+        long diff = this.getTimeStartMs() - anotherInstance.getTimeStartMs();
         return (int)diff;
+    }
+
+    public void setTimeEndMs(long timeEndMs) {
+        this.timeEndMs = timeEndMs;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

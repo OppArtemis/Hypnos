@@ -10,16 +10,20 @@ import java.util.Calendar;
  */
 
 public class Constants {
-    enum ActivityType { PEE, POOP, EAT, SLEEP, WAKE }
-    enum SleepWake { ASLEEP, AWAKE }
+    enum ActivityOptionalParams { DURATION, NOTES }
     enum RootNodeNames {BABY2, LOG2, USER2}
+
+    public final static String RootNodeBaby = "BABY2";
+    public final static String RootNodeLog = "LOG2";
+    public final static String RootNodeUser = "USER2";
 
     public final static SimpleDateFormat dateFormatDate = new SimpleDateFormat("yyyy-MM-dd");
     public final static SimpleDateFormat dateFormatLong = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public final static SimpleDateFormat dateFormatDisplayLong = new SimpleDateFormat("MMM dd HH:mm");
     public final static SimpleDateFormat dateFormatDisplayShort = new SimpleDateFormat("HH:mm");
 
-    public final static String lbmUIRefresh = "lbm_ui_refresh";
+    public final static String lbmNewBabyProfileLoaded = "lbm_newbabyprofileloaded";
+    public final static String lbmUIRefresh = "lbm_uirefresh";
 
     public static String sleepTimeFormat(long sleepLengthMs) {
         String out;

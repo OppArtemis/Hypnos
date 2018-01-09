@@ -1,6 +1,7 @@
 package com.artemis.hypnos.android;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -9,41 +10,56 @@ import java.util.List;
  */
 
 public class BabyProfile {
+    private String babyId;
     private String babyName;
-    private Calendar babyDOB = Calendar.getInstance();
-    private Calendar newDayTime = Calendar.getInstance();
+    private long babyDOB;
     private int newDayHour;
     private int newDayMinute;
-    private String babyId;
+
     private List<String> users = new ArrayList<>();
 
+    private List<ActivityLogTypes> logTypes = new ArrayList<>();
+
     BabyProfile() {
-        generateId();
+
     }
 
     public static BabyProfile defaultTest() {
         BabyProfile tobias = new BabyProfile();
         tobias.babyName = "Tobias Lin";
-        tobias.babyDOB.set(2017, Calendar.MAY, 3, 0, 0, 0);
+
+        Calendar dob = Calendar.getInstance();
+        dob.set(2017, Calendar.MAY, 3, 0, 0, 0);
+        dob.set(Calendar.MILLISECOND, 0);
+        tobias.babyDOB = dob.getTimeInMillis();
+
         tobias.setNewDayTime(0, 0);
+
         tobias.generateId();
 
         tobias.addUsers("jlin815@gmail.com");
         tobias.addUsers("jellobaby@gmail.com");
 
+        tobias.addLogTypes(new ActivityLogTypes("PEE",   1, Arrays.asList(""),    ""));
+        tobias.addLogTypes(new ActivityLogTypes("POOP",  1, Arrays.asList(""),    ""));
+        tobias.addLogTypes(new ActivityLogTypes("EAT B", 1, Arrays.asList(""),    "Breastmilk"));
+        tobias.addLogTypes(new ActivityLogTypes("EAT S", 1, Arrays.asList(""),    "Solids"));
+        tobias.addLogTypes(new ActivityLogTypes("SLEEP", 2, Arrays.asList("AWAKE", "ASLEEP"), ""));
+
         return tobias;
+    }
+
+    public void addLogTypes(ActivityLogTypes activityLogTypes) {
+        logTypes.add(activityLogTypes);
     }
 
     public void setNewDayTime(int hour, int minute) {
         this.newDayHour = hour;
         this.newDayMinute = minute;
-        this.newDayTime.set(Calendar.HOUR_OF_DAY, newDayHour); // new day is midnight
-        this.newDayTime.set(Calendar.MINUTE, minute); // new day is midnight
-        this.newDayTime.set(Calendar.SECOND, 0); // new day is midnight
     }
 
     public void generateId() {
-        String hashString = babyName + Constants.dateFormatLong.format(babyDOB.getTime());
+        String hashString = babyName + Long.toString(babyDOB);
         this.babyId = Constants.hashFunction(hashString);
     }
 
@@ -53,13 +69,22 @@ public class BabyProfile {
         return babyName;
     }
 
-    public String getBabyDOB() {
-        return Constants.dateFormatLong.format(babyDOB.getTime());
+    public long getBabyDOB() {
+        return babyDOB;
     }
 
-    public String getNewDayTimeString() { return Constants.dateFormatLong.format(newDayTime.getTime()); }
+    public String babyDOBString() {
+        return Constants.dateFormatLong.format(babyDOB);
+    }
 
-    public long getNewDayTimeLong() {
+//    public String getNewDayTimeString() { return Constants.dateFormatLong.format(newDayTime.getTime()); }
+
+    public long newDayTimeLong() {
+        Calendar newDayTime = Calendar.getInstance();
+        newDayTime.set(Calendar.HOUR_OF_DAY, newDayHour); // new day is midnight
+        newDayTime.set(Calendar.MINUTE, newDayMinute); // new day is midnight
+        newDayTime.set(Calendar.SECOND, 0); // new day is midnight
+
         return newDayTime.getTimeInMillis();
     }
 
@@ -75,5 +100,9 @@ public class BabyProfile {
 
     public int getNewDayMinute() {
         return newDayMinute;
+    }
+
+    public List<ActivityLogTypes> getLogTypes() {
+        return logTypes;
     }
 }
