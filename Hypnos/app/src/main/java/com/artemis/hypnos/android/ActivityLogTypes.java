@@ -12,9 +12,13 @@ import java.util.List;
 public class ActivityLogTypes {
     private String activityName;
     private String notes;
+    private Constants.TodayTotalOutputOptions todayTotalOutputOptions;
 
     private Integer statesPossible;
     private List<String> stateNames;
+
+    private boolean flagTimeEnd;
+    private boolean flagTimePicker;
 
     private Integer stateCurrent;
     private DatabaseReference lastPath;
@@ -24,10 +28,12 @@ public class ActivityLogTypes {
 
     }
 
-    ActivityLogTypes(String activityName, Integer statesPossible, List<String> stateNames, String notes) {
+    ActivityLogTypes(String activityName, Integer statesPossible, List<String> stateNames,
+                     Constants.TodayTotalOutputOptions todayTotalOutputOptions, String notes) {
         this.activityName = activityName;
         this.statesPossible = statesPossible;
         this.stateNames = stateNames;
+        this.todayTotalOutputOptions = todayTotalOutputOptions;
         this.notes = notes;
 
         stateCurrent = 0;
@@ -49,6 +55,10 @@ public class ActivityLogTypes {
         incrementState();
     }
 
+    public void removeLastEntry() {
+
+    }
+
     public void incrementState() {
         stateCurrent++;
 
@@ -56,7 +66,6 @@ public class ActivityLogTypes {
             stateCurrent = 0;
         }
     }
-
 
     public ActivityHandle getLastEntry() {
         return lastEntry;
@@ -84,5 +93,21 @@ public class ActivityLogTypes {
 
     public List<String> getStateNames() {
         return stateNames;
+    }
+
+    public String currentStateName() {
+        return stateNames.get(stateCurrent);
+    }
+
+    public boolean isFlagTimeEnd() {
+        return flagTimeEnd;
+    }
+
+    public boolean isFlagTimePicker() {
+        return flagTimePicker;
+    }
+
+    public Constants.TodayTotalOutputOptions getTodayTotalOutputOptions() {
+        return todayTotalOutputOptions;
     }
 }

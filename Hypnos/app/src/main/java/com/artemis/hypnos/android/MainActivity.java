@@ -6,11 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -37,10 +37,15 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTxtPeeLastReportedPerson;
     private TextView mTxtPeeTotalToday;
 
-    private Button mBtnEat;
-    private TextView mTxtEatLastReportedTime;
-    private TextView mTxtEatLastReportedPerson;
-    private TextView mTxtEatTotalToday;
+    private Button mBtnEatB;
+    private TextView mTxtEatBLastReportedTime;
+    private TextView mTxtEatBLastReportedPerson;
+    private TextView mTxtEatBTotalToday;
+
+    private Button mBtnEatS;
+    private TextView mTxtEatSLastReportedTime;
+    private TextView mTxtEatSLastReportedPerson;
+    private TextView mTxtEatSTotalToday;
 
     private Button mBtnSleep;
     private TextView mTxtSleepLastReportedTime;
@@ -72,11 +77,6 @@ public class MainActivity extends AppCompatActivity {
 //        });
 
         // set ui
-//        mTxtBabyName = findViewById(R.id.txtBabyName);
-//        mTxtBabyDob = findViewById(R.id.txtBabyDob);
-//        mTxtNewDayTime = findViewById(R.id.txtNewDayTime);
-//        mTxtCurrentUser = findViewById(R.id.txtCurrentUser);
-
         mBtnPoop = findViewById(R.id.btnPoop);
         mTxtPoopLastReportedTime = findViewById(R.id.txtPoopLastReportedTime);
         mTxtPoopLastReportedPerson = findViewById(R.id.txtPoopLastReportedPerson);
@@ -87,10 +87,15 @@ public class MainActivity extends AppCompatActivity {
         mTxtPeeLastReportedPerson = findViewById(R.id.txtPeeLastReportedPerson);
         mTxtPeeTotalToday = findViewById(R.id.txtPeeTotalToday);
 
-        mBtnEat = findViewById(R.id.btnEat);
-        mTxtEatLastReportedTime = findViewById(R.id.txtEatLastReportedTime);
-        mTxtEatLastReportedPerson = findViewById(R.id.txtEatLastReportedPerson);
-        mTxtEatTotalToday = findViewById(R.id.txtEatTotalToday);
+        mBtnEatB = findViewById(R.id.btnEat);
+        mTxtEatBLastReportedTime = findViewById(R.id.txtEatLastReportedTime);
+        mTxtEatBLastReportedPerson = findViewById(R.id.txtEatLastReportedPerson);
+        mTxtEatBTotalToday = findViewById(R.id.txtEatTotalToday);
+
+        mBtnEatS = findViewById(R.id.btnEat2);
+        mTxtEatSLastReportedTime = findViewById(R.id.txtEat2LastReportedTime);
+        mTxtEatSLastReportedPerson = findViewById(R.id.txtEat2LastReportedPerson);
+        mTxtEatSTotalToday = findViewById(R.id.txtEat2TotalToday);
 
         mBtnSleep = findViewById(R.id.btnSleep);
         mTxtSleepLastReportedTime = findViewById(R.id.txtSleepLastReportedTime);
@@ -105,27 +110,48 @@ public class MainActivity extends AppCompatActivity {
         mBtnUndo = findViewById(R.id.btnUndo);
         mTxtSleepList = findViewById(R.id.txtSleepList);
 
-
         // todo get user login
 
         // load profile
         databaseHandle = new DatabaseHandle();
         databaseHandle.setContext(this);
 
-//        databaseHandle.addBabyEntry();
-
-//        getSupportActionBar().setTitle(databaseHandle.getBabyProfile().getBabyName());
-
         setHandles();
-//        setUIInit();
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+        mBtnWake.setVisibility(View.INVISIBLE);
+        mBtnUndo.setVisibility(View.INVISIBLE);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver_UIRefresh,
                 new IntentFilter(Constants.lbmUIRefresh));
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver_NewBabyProfile,
+                new IntentFilter(Constants.lbmNewBabyProfileLoaded));
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //respond to menu item selection
+        return true;
     }
 
     // Our handler for received Intents. This will be called whenever an Intent
     // with an action named "custom-event-name" is broadcasted.
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mMessageReceiver_NewBabyProfile = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            getSupportActionBar().setTitle(databaseHandle.getBabyProfile().getBabyName());
+        }
+    };
+
+    // Our handler for received Intents. This will be called whenever an Intent
+    // with an action named "custom-event-name" is broadcasted.
+    private BroadcastReceiver mMessageReceiver_UIRefresh = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
@@ -139,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         // Unregister since the activity is about to be closed.
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver_UIRefresh);
         super.onDestroy();
     }
 
@@ -159,10 +185,14 @@ public class MainActivity extends AppCompatActivity {
     public void setUI(String activityType) {
         setUICluster(mTxtPeeTotalToday, mTxtPeeLastReportedTime, mTxtPeeLastReportedPerson, databaseHandle.getBabyLogCounter().get(0));
         setUICluster(mTxtPoopTotalToday, mTxtPoopLastReportedTime, mTxtPoopLastReportedPerson, databaseHandle.getBabyLogCounter().get(1));
-        setUICluster(mTxtEatTotalToday, mTxtEatLastReportedTime, mTxtEatLastReportedPerson, databaseHandle.getBabyLogCounter().get(2));
-        setUICluster(mTxtSleepTotalToday, mTxtSleepLastReportedTime, mTxtSleepLastReportedPerson, databaseHandle.getBabyLogCounter().get(3));
-        setUICluster(mTxtWakeTotalToday, mTxtWakeLastReportedTime, mTxtWakeLastReportedPerson, databaseHandle.getBabyLogCounter().get(3));
-//
+        setUICluster(mTxtEatBTotalToday, mTxtEatBLastReportedTime, mTxtEatBLastReportedPerson, databaseHandle.getBabyLogCounter().get(2));
+        setUICluster(mTxtEatSTotalToday, mTxtEatSLastReportedTime, mTxtEatSLastReportedPerson, databaseHandle.getBabyLogCounter().get(3));
+        setUICluster(mTxtSleepTotalToday, mTxtSleepLastReportedTime, mTxtSleepLastReportedPerson, databaseHandle.getBabyLogCounter().get(4));
+//        setUICluster(mTxtWakeTotalToday, mTxtWakeLastReportedTime, mTxtWakeLastReportedPerson, databaseHandle.getBabyLogCounter().get(4));
+
+        mTxtWakeTotalToday.setText(databaseHandle.getBabyLogCounter().get(4).getCurrentState());
+        mTxtSleepList.setText(databaseHandle.getBabyLogCounter().get(4).getNotes());
+
 //        // override the sleep ones
 //        mTxtSleepTotalToday.setText(Constants.sleepTimeFormat(databaseHandle.sleepLengthMs));
 //        mTxtWakeTotalToday.setText(databaseHandle.sleepState.toString());
@@ -173,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
 //            mBtnWake.setVisibility(View.VISIBLE);
 //        } else {
 //            mBtnSleep.setVisibility(View.VISIBLE);
-//            mBtnWake.setVisibility(View.INVISIBLE);
+
 //        }
     }
 
@@ -203,8 +233,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mBtnEat.setOnClickListener(new View.OnClickListener() {
-            String activityType = "EAT";
+        mBtnEatB.setOnClickListener(new View.OnClickListener() {
+            String activityType = "EAT B";
+
+            @Override
+            public void onClick(View view) {
+                Calendar mCurrentTime = Calendar.getInstance();
+                int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
+                int minute = mCurrentTime.get(Calendar.MINUTE);
+                TimePickerDialog mTimePicker
+                        = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        Calendar mPickedTime = Calendar.getInstance();
+                        mPickedTime.set(Calendar.HOUR_OF_DAY, selectedHour);
+                        mPickedTime.set(Calendar.MINUTE, selectedMinute);
+                        mPickedTime.set(Calendar.SECOND, 0);
+                        long timeMs = mPickedTime.getTimeInMillis();
+
+                        addLogEntry(activityType, timeMs);
+                    }
+                }, hour, minute, true);//Yes 24 hour time
+                mTimePicker.setTitle("Select Time");
+                mTimePicker.show();
+            }
+        });
+
+        mBtnEatS.setOnClickListener(new View.OnClickListener() {
+            String activityType = "EAT S";
 
             @Override
             public void onClick(View view) {
@@ -255,31 +311,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mBtnWake.setOnClickListener(new View.OnClickListener() {
-            String activityType = "SLEEP";
-
-            @Override
-            public void onClick(View view) {
-                Calendar mCurrentTime = Calendar.getInstance();
-                int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
-                int minute = mCurrentTime.get(Calendar.MINUTE);
-                TimePickerDialog mTimePicker
-                        = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        Calendar mPickedTime = Calendar.getInstance();
-                        mPickedTime.set(Calendar.HOUR_OF_DAY, selectedHour);
-                        mPickedTime.set(Calendar.MINUTE, selectedMinute);
-                        mPickedTime.set(Calendar.SECOND, 0);
-                        long timeMs = mPickedTime.getTimeInMillis();
-
-                        addLogEntry(activityType, timeMs);
-                    }
-                }, hour, minute, true);//Yes 24 hour time
-                mTimePicker.setTitle("Select Time");
-                mTimePicker.show();
-            }
-        });
+//        mBtnWake.setOnClickListener(new View.OnClickListener() {
+//            String activityType = "SLEEP";
+//
+//            @Override
+//            public void onClick(View view) {
+//                Calendar mCurrentTime = Calendar.getInstance();
+//                int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
+//                int minute = mCurrentTime.get(Calendar.MINUTE);
+//                TimePickerDialog mTimePicker
+//                        = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+//                    @Override
+//                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+//                        Calendar mPickedTime = Calendar.getInstance();
+//                        mPickedTime.set(Calendar.HOUR_OF_DAY, selectedHour);
+//                        mPickedTime.set(Calendar.MINUTE, selectedMinute);
+//                        mPickedTime.set(Calendar.SECOND, 0);
+//                        long timeMs = mPickedTime.getTimeInMillis();
+//
+//                        addLogEntry(activityType, timeMs);
+//                    }
+//                }, hour, minute, true);//Yes 24 hour time
+//                mTimePicker.setTitle("Select Time");
+//                mTimePicker.show();
+//            }
+//        });
 
         mBtnUndo.setOnClickListener(new View.OnClickListener() {
             @Override

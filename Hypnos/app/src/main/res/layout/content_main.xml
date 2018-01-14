@@ -166,7 +166,7 @@
         android:layout_alignTop="@+id/btnPoop"
         android:layout_marginLeft="@dimen/horizontal_between_activitytypes"
         android:layout_marginTop="@dimen/vertical_between_activitytypes"
-        android:text="Eat" />
+        android:text="Eat B" />
 
     <TextView
         android:id="@+id/txtEatTotalToday"
@@ -196,13 +196,50 @@
         android:layout_marginTop="@dimen/vertical_lastreportedtime_to_lastreportedperson" />
 
 
+    <Button
+        android:id="@+id/btnEat2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnEat"
+        android:layout_alignTop="@+id/btnEat"
+        android:layout_marginLeft="@dimen/horizontal_between_activitytypes"
+        android:layout_marginTop="@dimen/vertical_between_activitytypes"
+        android:text="Eat S" />
+
+    <TextView
+        android:id="@+id/txtEat2TotalToday"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnEat2"
+        android:layout_alignTop="@+id/btnEat2"
+        android:layout_marginLeft="@dimen/horizontal_button_to_totaltoday"
+        android:layout_marginTop="@dimen/vertical_button_to_totaltoday" />
+
+    <TextView
+        android:id="@+id/txtEat2LastReportedTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtEat2TotalToday"
+        android:layout_alignTop="@+id/txtEat2TotalToday"
+        android:layout_marginLeft="@dimen/horizontal_totaltoday_to_lastreportedtime"
+        android:layout_marginTop="@dimen/vertical_totaltoday_to_lastreportedtime" />
+
+    <TextView
+        android:id="@+id/txtEat2LastReportedPerson"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtEat2LastReportedTime"
+        android:layout_alignTop="@+id/txtEat2LastReportedTime"
+        android:layout_marginLeft="@dimen/horizontal_lastreportedtime_to_lastreportedperson"
+        android:layout_marginTop="@dimen/vertical_lastreportedtime_to_lastreportedperson" />
+
 
     <Button
         android:id="@+id/btnSleep"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btnEat"
-        android:layout_alignTop="@+id/btnEat"
+        android:layout_alignLeft="@+id/btnEat2"
+        android:layout_alignTop="@+id/btnEat2"
         android:layout_marginLeft="@dimen/horizontal_between_activitytypes"
         android:layout_marginTop="@dimen/vertical_between_activitytypes"
         android:text="Sleep"/>

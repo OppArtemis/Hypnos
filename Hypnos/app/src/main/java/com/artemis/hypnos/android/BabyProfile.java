@@ -40,11 +40,11 @@ public class BabyProfile {
         tobias.addUsers("jlin815@gmail.com");
         tobias.addUsers("jellobaby@gmail.com");
 
-        tobias.addLogTypes(new ActivityLogTypes("PEE",   1, Arrays.asList(""),    ""));
-        tobias.addLogTypes(new ActivityLogTypes("POOP",  1, Arrays.asList(""),    ""));
-        tobias.addLogTypes(new ActivityLogTypes("EAT B", 1, Arrays.asList(""),    "Breastmilk"));
-        tobias.addLogTypes(new ActivityLogTypes("EAT S", 1, Arrays.asList(""),    "Solids"));
-        tobias.addLogTypes(new ActivityLogTypes("SLEEP", 2, Arrays.asList("AWAKE", "ASLEEP"), ""));
+        tobias.addLogTypes(new ActivityLogTypes("PEE",   1, Arrays.asList(""),                Constants.TodayTotalOutputOptions.COUNT,    ""));
+        tobias.addLogTypes(new ActivityLogTypes("POOP",  1, Arrays.asList(""),                Constants.TodayTotalOutputOptions.COUNT,    ""));
+        tobias.addLogTypes(new ActivityLogTypes("EAT B", 1, Arrays.asList(""),                Constants.TodayTotalOutputOptions.COUNT,    "Breastmilk"));
+        tobias.addLogTypes(new ActivityLogTypes("EAT S", 1, Arrays.asList(""),                Constants.TodayTotalOutputOptions.COUNT,    "Solids"));
+        tobias.addLogTypes(new ActivityLogTypes("SLEEP", 2, Arrays.asList("AWAKE", "ASLEEP"), Constants.TodayTotalOutputOptions.DURATION, ""));
 
         return tobias;
     }

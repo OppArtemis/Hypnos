@@ -46,6 +46,7 @@ public class DatabaseHandle {
     DatabaseReference refLogRootNode;
 
     List<DatabaseReference> refLogSubrootNodes;
+    List<DatabaseReference> refLogSessionLog;
     List<ActivityCounterHandle> babyLogCounter;
 
     long sleepLengthMs = 0;
@@ -127,16 +128,18 @@ public class DatabaseHandle {
                         .child(babyProfile.getBabyId());
 
                 refLogSubrootNodes = new ArrayList<>();
+                refLogSessionLog = new ArrayList<>();
                 babyLogCounter = new ArrayList<>();
                 for (int i = 0; i < babyProfile.getLogTypes().size(); i++) {
-                    String currLogName = babyProfile.getLogTypes().get(i).getActivityName().toString();
+                    ActivityLogTypes currLogType = babyProfile.getLogTypes().get(i);
+                    String currLogName = currLogType.getActivityName().toString();
 
                     DatabaseReference currRef = mDatabase.getReference(Constants.RootNodeNames.LOG2.toString())
                             .child(babyProfile.getBabyId())
                             .child(currLogName);
                     refLogSubrootNodes.add(currRef);
 
-                    ActivityCounterHandle currCounter = new ActivityCounterHandle(currLogName);
+                    ActivityCounterHandle currCounter = new ActivityCounterHandle(currLogType);
                     babyLogCounter.add(currCounter);
 
                     addLogListener(babyProfile.getLogTypes().get(i), currRef, currCounter);
@@ -183,7 +186,10 @@ public class DatabaseHandle {
         // a new entry. otherwise, find the existing one and update it
         for (int i = 0; i < babyProfile.getLogTypes().size(); i++) {
             if (babyProfile.getLogTypes().get(i).getActivityName().equals(activityType.toString())) {
-                babyProfile.getLogTypes().get(i).addLogEntry(newEntryToAdd, pathToAdd);
+                babyProfile.getLogTypes().get(i).addLogEntry(newEntryToAdd, pathToAdd); // write the log
+//                refBabyRootNode.setValue(babyProfile);
+                // update baby state information
+//                refLogSessionLog.add();
                 break;
             }
         }
@@ -220,6 +226,12 @@ public class DatabaseHandle {
 
     public List<ActivityCounterHandle> getBabyLogCounter() {
         return babyLogCounter;
+    }
+
+    private void lbmNewUserProfileLoaded() {
+        Log.d("sender", "Broadcasting message");
+        Intent intent = new Intent(Constants.lbmNewUserProfileLoaded);
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 
     private void lbmNewBabyProfileLoaded() {

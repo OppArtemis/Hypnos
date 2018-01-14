@@ -4,14 +4,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by jf2lin on 09/20/2017.
  */
 
 public class Constants {
+    public final static String appName = "hyp";
+
     enum ActivityOptionalParams { DURATION, NOTES }
     enum RootNodeNames {BABY2, LOG2, USER2}
+    enum TodayTotalOutputOptions { COUNT, DURATION }
 
     public final static String RootNodeBaby = "BABY2";
     public final static String RootNodeLog = "LOG2";
@@ -21,8 +25,10 @@ public class Constants {
     public final static SimpleDateFormat dateFormatLong = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public final static SimpleDateFormat dateFormatDisplayLong = new SimpleDateFormat("MMM dd HH:mm");
     public final static SimpleDateFormat dateFormatDisplayShort = new SimpleDateFormat("HH:mm");
+    public final static SimpleDateFormat dateFormatDisplayDebug = new SimpleDateFormat("yyyy MMM dd HH:mm:ss.SSS");
 
     public final static String lbmNewBabyProfileLoaded = "lbm_newbabyprofileloaded";
+    public final static String lbmNewUserProfileLoaded = "lbm_newuserprofileloaded";
     public final static String lbmUIRefresh = "lbm_uirefresh";
 
     public static String sleepTimeFormat(long sleepLengthMs) {
@@ -55,5 +61,12 @@ public class Constants {
         }
 
         return null;
+    }
+
+    public static String formatInterval(final long l)
+    {
+        final long hr = TimeUnit.MILLISECONDS.toHours(l);
+        final long min = TimeUnit.MILLISECONDS.toMinutes(l - TimeUnit.HOURS.toMillis(hr));
+        return String.format("%02d:%02d", hr, min);
     }
 }
