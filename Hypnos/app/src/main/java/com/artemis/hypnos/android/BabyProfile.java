@@ -18,39 +18,57 @@ public class BabyProfile {
 
     private List<String> users = new ArrayList<>();
 
-    private List<ActivityLogTypes> logTypes = new ArrayList<>();
+    private List<ActivityClass> logTypes = new ArrayList<>();
 
     BabyProfile() {
 
     }
 
-    public static BabyProfile defaultTest() {
-        BabyProfile tobias = new BabyProfile();
-        tobias.babyName = "Tobias Lin";
+    BabyProfile(String babyName, Calendar dob) {
+        this.babyName = babyName;
+        this.babyDOB = dob.getTimeInMillis();
 
+        setNewDayTime(0, 0);
+        generateId();
+    }
+
+    public static BabyProfile defaultTest() {
         Calendar dob = Calendar.getInstance();
         dob.set(2017, Calendar.MAY, 3, 0, 0, 0);
         dob.set(Calendar.MILLISECOND, 0);
-        tobias.babyDOB = dob.getTimeInMillis();
 
-        tobias.setNewDayTime(0, 0);
+        BabyProfile tobias = new BabyProfile("Tobias Lin", dob);
 
-        tobias.generateId();
+        tobias.addUsers(new UserProfile("Jonathan Lin", "jlin815@gmail.com"));
+        tobias.addUsers(new UserProfile("Joanna Wu", "jellobaby@gmail.com"));
 
-        tobias.addUsers("jlin815@gmail.com");
-        tobias.addUsers("jellobaby@gmail.com");
+//        ActivityClass(String activityName,
+//                Integer statesPossible,
+//                List<String> stateNames,
+//                List<Constants.ActivityStateTypes> stateTypes,
+//                Constants.TodayTotalOutputOptions todayTotalOutputOptions,
+//                String notes)
 
-        tobias.addLogTypes(new ActivityLogTypes("PEE",   1, Arrays.asList(""),                Constants.TodayTotalOutputOptions.COUNT,    ""));
-        tobias.addLogTypes(new ActivityLogTypes("POOP",  1, Arrays.asList(""),                Constants.TodayTotalOutputOptions.COUNT,    ""));
-        tobias.addLogTypes(new ActivityLogTypes("EAT B", 1, Arrays.asList(""),                Constants.TodayTotalOutputOptions.COUNT,    "Breastmilk"));
-        tobias.addLogTypes(new ActivityLogTypes("EAT S", 1, Arrays.asList(""),                Constants.TodayTotalOutputOptions.COUNT,    "Solids"));
-        tobias.addLogTypes(new ActivityLogTypes("SLEEP", 2, Arrays.asList("AWAKE", "ASLEEP"), Constants.TodayTotalOutputOptions.DURATION, ""));
-
+        tobias.addLogTypes(new ActivityClass("PEE", 1, Arrays.asList(""),
+                Arrays.asList(Constants.ActivityStateTypes.TIME_START),
+                Constants.TodayTotalOutputOptions.COUNT, ""));
+        tobias.addLogTypes(new ActivityClass("POOP", 1, Arrays.asList(""),
+                Arrays.asList(Constants.ActivityStateTypes.TIME_START),
+                Constants.TodayTotalOutputOptions.COUNT, ""));
+        tobias.addLogTypes(new ActivityClass("EAT B", 1, Arrays.asList(""),
+                Arrays.asList(Constants.ActivityStateTypes.TIME_START),
+                Constants.TodayTotalOutputOptions.COUNT, "Breastmilk"));
+        tobias.addLogTypes(new ActivityClass("EAT S", 1, Arrays.asList(""),
+                Arrays.asList(Constants.ActivityStateTypes.TIME_START),
+                Constants.TodayTotalOutputOptions.COUNT, "Solids"));
+        tobias.addLogTypes(new ActivityClass("SLEEP", 2, Arrays.asList("ASLEEP", "AWAKE"),
+                Arrays.asList(Constants.ActivityStateTypes.TIME_START, Constants.ActivityStateTypes.TIME_END),
+                Constants.TodayTotalOutputOptions.DURATION, ""));
         return tobias;
     }
 
-    public void addLogTypes(ActivityLogTypes activityLogTypes) {
-        logTypes.add(activityLogTypes);
+    public void addLogTypes(ActivityClass activityClass) {
+        logTypes.add(activityClass);
     }
 
     public void setNewDayTime(int hour, int minute) {
@@ -63,7 +81,9 @@ public class BabyProfile {
         this.babyId = Constants.hashFunction(hashString);
     }
 
-    public void addUsers(String userEmail) { users.add(userEmail); }
+    public void addUsers(UserProfile userProfile) {
+        users.add(userProfile.getUserId());
+    }
 
     public String getBabyName() {
         return babyName;
@@ -102,7 +122,7 @@ public class BabyProfile {
         return newDayMinute;
     }
 
-    public List<ActivityLogTypes> getLogTypes() {
+    public List<ActivityClass> getLogTypes() {
         return logTypes;
     }
 }

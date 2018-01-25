@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.google.api.client.util.Data;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -17,7 +16,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -47,7 +45,6 @@ public class DatabaseHandle {
 
     List<DatabaseReference> refLogSubrootNodes;
     List<DatabaseReference> refLogSessionLog;
-    List<ActivityCounterHandle> babyLogCounter;
 
     long sleepLengthMs = 0;
     String sleepList = "";
@@ -62,7 +59,7 @@ public class DatabaseHandle {
     }
 
     public void onLoadcheckUser() {
-        final DatabaseReference userRoot = mDatabase.getReference().child(Constants.RootNodeNames.USER2.toString());
+        final DatabaseReference userRoot = mDatabase.getReference().child(Constants.RootNodeUser.toString());
 
         userRoot.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -88,10 +85,12 @@ public class DatabaseHandle {
                 }
 
                 refUserRootNode = mDatabase.getReference()
-                        .child(Constants.RootNodeNames.USER2.toString())
+                        .child(Constants.RootNodeUser.toString())
                         .child(userProfile.getUserId());
 
                 onLoadcheckBaby();
+
+//                dataMigration1();
             }
 
             @Override
@@ -103,7 +102,7 @@ public class DatabaseHandle {
 
     public void onLoadcheckBaby() {
         // search database for current baby, insert if doesn't exist
-        final DatabaseReference babyRoot = mDatabase.getReference().child(Constants.RootNodeNames.BABY2.toString());
+        final DatabaseReference babyRoot = mDatabase.getReference().child(Constants.RootNodeBaby.toString());
         babyRoot.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -121,28 +120,24 @@ public class DatabaseHandle {
                     babyRoot.child(babyProfile.getBabyId()).setValue(babyProfile);
                 }
 
-                refBabyRootNode = mDatabase.getReference(Constants.RootNodeNames.BABY2.toString())
+                refBabyRootNode = mDatabase.getReference(Constants.RootNodeBaby.toString())
                         .child(babyProfile.getBabyId());
 
-                refLogRootNode = mDatabase.getReference(Constants.RootNodeNames.LOG2.toString())
+                refLogRootNode = mDatabase.getReference(Constants.RootNodeLog.toString())
                         .child(babyProfile.getBabyId());
 
                 refLogSubrootNodes = new ArrayList<>();
                 refLogSessionLog = new ArrayList<>();
-                babyLogCounter = new ArrayList<>();
                 for (int i = 0; i < babyProfile.getLogTypes().size(); i++) {
-                    ActivityLogTypes currLogType = babyProfile.getLogTypes().get(i);
+                    ActivityClass currLogType = babyProfile.getLogTypes().get(i);
                     String currLogName = currLogType.getActivityName().toString();
 
-                    DatabaseReference currRef = mDatabase.getReference(Constants.RootNodeNames.LOG2.toString())
+                    DatabaseReference currRef = mDatabase.getReference(Constants.RootNodeLog.toString())
                             .child(babyProfile.getBabyId())
                             .child(currLogName);
                     refLogSubrootNodes.add(currRef);
 
-                    ActivityCounterHandle currCounter = new ActivityCounterHandle(currLogType);
-                    babyLogCounter.add(currCounter);
-
-                    addLogListener(babyProfile.getLogTypes().get(i), currRef, currCounter);
+                    addLogListener(babyProfile.getLogTypes().get(i), currRef);
                 }
 
                 lbmNewBabyProfileLoaded();
@@ -160,47 +155,36 @@ public class DatabaseHandle {
     public String getCurrentUser() { return userProfile.getUserName(); }
 
     public void removeLogEntry() {
-        Query lastQuery = refLogRootNode.limitToLast(1);
-
-        lastQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChildren()) {
-                    DataSnapshot firstChild = dataSnapshot.getChildren().iterator().next();
-                    firstChild.getRef().removeValue();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                //Handle possible errors.
-            }
-        });
+        if (refLogSessionLog.size() > 0) {
+            DatabaseReference lastPath = refLogSessionLog.get(refLogSessionLog.size() - 1);
+            refLogSessionLog.remove(refLogSessionLog.size() - 1);
+            lastPath.removeValue();
+        }
     }
 
     public void addLogEntry(String activityType, long nowMs) {
-        ActivityHandle newEntryToAdd = new ActivityHandle(activityType, userProfile.getUserName(), nowMs);
+        ActivityHandle newEntryToAdd = new ActivityHandle(activityType, userProfile.returnFirstName(), nowMs);
         DatabaseReference pathToAdd = refLogRootNode.child(activityType).child(Long.toString(nowMs));
 
         // check the state for this activity. if the activity is switching to state '0', then make
         // a new entry. otherwise, find the existing one and update it
         for (int i = 0; i < babyProfile.getLogTypes().size(); i++) {
             if (babyProfile.getLogTypes().get(i).getActivityName().equals(activityType.toString())) {
-                babyProfile.getLogTypes().get(i).addLogEntry(newEntryToAdd, pathToAdd); // write the log
-//                refBabyRootNode.setValue(babyProfile);
+                DatabaseReference newPath = babyProfile.getLogTypes().get(i).addLogEntry(newEntryToAdd, pathToAdd); // write the logEntries
+
                 // update baby state information
-//                refLogSessionLog.add();
+                refLogSessionLog.add(newPath);
                 break;
             }
         }
     }
 
-    public void addLogListener(final ActivityLogTypes logType, final DatabaseReference logSubnode, final ActivityCounterHandle counter) {
+    public void addLogListener(final ActivityClass logType, final DatabaseReference logSubnode) {
         // Attach a listener to read the data at our posts reference
         logSubnode.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                onDataChangeFirebaseEvent(dataSnapshot, logType, counter);
+                onDataChangeFirebaseEvent(dataSnapshot, logType);
             }
 
             @Override
@@ -210,22 +194,31 @@ public class DatabaseHandle {
         });
     }
 
-    public void onDataChangeFirebaseEvent(DataSnapshot dataSnapshot, ActivityLogTypes logType, ActivityCounterHandle counter) {
-        counter.reset();
+    public void onDataChangeFirebaseEvent(DataSnapshot dataSnapshot, ActivityClass logType) {
+        logType.logReset();
 
         for (DataSnapshot child: dataSnapshot.getChildren()) {
             ActivityHandle newPost = child.getValue(ActivityHandle.class);
-            counter.push(newPost);
+            DatabaseReference newPath = child.getRef();
+            logType.logPush(newPost, newPath);
         }
 
-        long profileNewDayLimit = babyProfile.newDayTimeLong();
-        counter.findTotalToday(profileNewDayLimit);
+//        logType.sortLog();
 
+        long timePoint_Old = babyProfile.newDayTimeLong() - 86400000;
+        long timePoint_Start = babyProfile.newDayTimeLong();
+        long timePoint_End = babyProfile.newDayTimeLong() + 86400000;
+        logType.findTotalToday(timePoint_Old, timePoint_Start, timePoint_End);
+
+        // update baby state
+        refBabyRootNode.setValue(babyProfile);
+
+        // update UI
         lbmUpdateUI(logType.getActivityName());
     }
 
-    public List<ActivityCounterHandle> getBabyLogCounter() {
-        return babyLogCounter;
+    public List<ActivityClass> getActivityClasses() {
+        return babyProfile.getLogTypes();
     }
 
     private void lbmNewUserProfileLoaded() {
@@ -246,5 +239,47 @@ public class DatabaseHandle {
         // You can also include some extra data.
         intent.putExtra("message", activityType);
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
+    }
+
+    public void dataMigration1() {
+        DatabaseReference refLogRootNodeOld = mDatabase.getReference("LOG/bbe385bff3d7586e3789556841029ece");
+        DatabaseReference refLogRootNodeNew = refLogRootNode;
+
+        // load all the old logEntries entries
+        refLogRootNodeOld.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot child: dataSnapshot.getChildren()) {
+                    ActivityHandle_v1 oldPost = child.getValue(ActivityHandle_v1.class);
+
+                    switch (oldPost.getActivityType()) {
+                        case PEE:
+                            addLogEntry(oldPost.getActivityType().toString(), oldPost.getTimeMs());
+                            break;
+
+                        case POOP:
+                            addLogEntry(oldPost.getActivityType().toString(), oldPost.getTimeMs());
+                            break;
+
+                        case EAT:
+                            addLogEntry("EAT B", oldPost.getTimeMs());
+                            break;
+
+                        case SLEEP:
+                            addLogEntry(oldPost.getActivityType().toString(), oldPost.getTimeMs());
+                            break;
+
+                        case WAKE:
+                            addLogEntry("SLEEP", oldPost.getTimeMs());
+                            break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
     }
 }

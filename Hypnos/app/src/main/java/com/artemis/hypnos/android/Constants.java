@@ -13,13 +13,14 @@ import java.util.concurrent.TimeUnit;
 public class Constants {
     public final static String appName = "hyp";
 
-    enum ActivityOptionalParams { DURATION, NOTES }
-    enum RootNodeNames {BABY2, LOG2, USER2}
+    enum ActivityStateTypes { TIME_START, TIME_END }
     enum TodayTotalOutputOptions { COUNT, DURATION }
 
-    public final static String RootNodeBaby = "BABY2";
-    public final static String RootNodeLog = "LOG2";
-    public final static String RootNodeUser = "USER2";
+    public final static String RootNodeSuffix = "2";
+
+    public final static String RootNodeBaby = "BABY" + RootNodeSuffix;
+    public final static String RootNodeLog = "LOG" + RootNodeSuffix;
+    public final static String RootNodeUser = "USER" + RootNodeSuffix;
 
     public final static SimpleDateFormat dateFormatDate = new SimpleDateFormat("yyyy-MM-dd");
     public final static SimpleDateFormat dateFormatLong = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

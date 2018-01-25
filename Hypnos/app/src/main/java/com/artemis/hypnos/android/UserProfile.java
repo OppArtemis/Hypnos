@@ -26,6 +26,13 @@ public class UserProfile {
 //        this.connectedBabies = new ArrayList<>();
     }
 
+    UserProfile(String userName, String userEmail) {
+        this.userName = userName;
+        this.userEmail = userEmail;
+        generateId();
+//        this.connectedBabies = new ArrayList<>();
+    }
+
     public void generateId() {
         String hashString = userEmail;
         this.userId = Constants.hashFunction(hashString);
@@ -33,6 +40,11 @@ public class UserProfile {
 
     public String getUserName() {
         return userName;
+    }
+
+    public String returnFirstName() {
+        String firstName = userName.split(" ")[0];
+        return firstName;
     }
 
     public String getUserEmail() {
