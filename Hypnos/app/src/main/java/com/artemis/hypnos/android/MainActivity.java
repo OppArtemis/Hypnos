@@ -51,6 +51,12 @@ public class MainActivity extends AppCompatActivity {
 
     private Button mBtnUndo;
     private TextView mTxtSleepList;
+
+    private static final int MENU_ITEM_ITEM1 = 1;
+    private static final int MENU_ITEM_ITEM2 = 2;
+    private static final int MENU_ITEM_ITEM3 = 3;
+
+    private long timeToDisplay = Calendar.getInstance().getTimeInMillis();
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,14 +116,53 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.menu_main, menu);
+        menu.add(Menu.NONE, MENU_ITEM_ITEM1, Menu.NONE, "Back");
+        menu.add(Menu.NONE, MENU_ITEM_ITEM2, Menu.NONE, "Forward");
+        menu.add(Menu.NONE, MENU_ITEM_ITEM3, Menu.NONE, "Today");
         return true;
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         //respond to menu item selection
-        return true;
+        switch (item.getItemId()) {
+            case MENU_ITEM_ITEM1:
+                timeToDisplay = timeToDisplay - 86400000;
+                break;
+
+            case MENU_ITEM_ITEM2:
+                timeToDisplay = timeToDisplay + 86400000;
+                break;
+
+            case MENU_ITEM_ITEM3:
+                setClockToToday();
+                break;
+        }
+
+        if (timeToDisplay > Calendar.getInstance().getTimeInMillis()) {
+            setClockToToday();
+        }
+
+        setClockAndUpdateUI();
+
+        return false;
+    }
+
+    public void setClockAndUpdateUI() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeToDisplay);
+
+        String logPivot1 = Constants.dateFormatDisplayDebug.format(calendar.getTimeInMillis());
+        getSupportActionBar().setTitle(logPivot1);
+
+        for (int i = 0; i < 5; i++) {
+            databaseHandle.updateUI(calendar, databaseHandle.getBabyProfile().getLogTypes().get(i));
+        }
+    }
+
+    public void setClockToToday() {
+        timeToDisplay = Calendar.getInstance().getTimeInMillis();
     }
 
     // Our handler for received Intents. This will be called whenever an Intent

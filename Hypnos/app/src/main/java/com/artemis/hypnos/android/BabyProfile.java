@@ -99,8 +99,7 @@ public class BabyProfile {
 
 //    public String getNewDayTimeString() { return Constants.dateFormatLong.format(newDayTime.getTime()); }
 
-    public long newDayTimeLong() {
-        Calendar newDayTime = Calendar.getInstance();
+    public long newDayTimeLong(Calendar newDayTime) {
         newDayTime.set(Calendar.HOUR_OF_DAY, newDayHour); // new day is midnight
         newDayTime.set(Calendar.MINUTE, newDayMinute); // new day is midnight
         newDayTime.set(Calendar.SECOND, 0); // new day is midnight

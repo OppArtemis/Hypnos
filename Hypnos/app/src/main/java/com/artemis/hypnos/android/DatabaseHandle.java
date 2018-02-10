@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.google.firebase.auth.ActionCodeResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -16,6 +17,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -203,11 +205,13 @@ public class DatabaseHandle {
             logType.logPush(newPost, newPath);
         }
 
-//        logType.sortLog();
+        updateUI(Calendar.getInstance(), logType);
+    }
 
-        long timePoint_Old = babyProfile.newDayTimeLong() - 86400000;
-        long timePoint_Start = babyProfile.newDayTimeLong();
-        long timePoint_End = babyProfile.newDayTimeLong() + 86400000;
+    public void updateUI(Calendar today, ActivityClass logType) {
+        long timePoint_Old = babyProfile.newDayTimeLong(today) - 86400000;
+        long timePoint_Start = babyProfile.newDayTimeLong(today);
+        long timePoint_End = babyProfile.newDayTimeLong(today) + 86400000;
         logType.findTotalToday(timePoint_Old, timePoint_Start, timePoint_End);
 
         // update baby state
