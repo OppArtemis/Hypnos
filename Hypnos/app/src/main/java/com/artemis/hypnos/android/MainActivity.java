@@ -29,33 +29,25 @@ public class MainActivity extends AppCompatActivity {
 
     private Button mBtnPoop;
     private TextView mTxtPoopLastReportedTime;
-    private TextView mTxtPoopLastReportedPerson;
     private TextView mTxtPoopTotalToday;
 
     private Button mBtnPee;
     private TextView mTxtPeeLastReportedTime;
-    private TextView mTxtPeeLastReportedPerson;
     private TextView mTxtPeeTotalToday;
 
     private Button mBtnEatB;
     private TextView mTxtEatBLastReportedTime;
-    private TextView mTxtEatBLastReportedPerson;
     private TextView mTxtEatBTotalToday;
 
     private Button mBtnEatS;
     private TextView mTxtEatSLastReportedTime;
-    private TextView mTxtEatSLastReportedPerson;
     private TextView mTxtEatSTotalToday;
 
     private Button mBtnSleep;
     private TextView mTxtSleepLastReportedTime;
-    private TextView mTxtSleepLastReportedPerson;
     private TextView mTxtSleepTotalToday;
 
-    private Button mBtnWake;
-    private TextView mTxtWakeLastReportedTime;
-    private TextView mTxtWakeLastReportedPerson;
-    private TextView mTxtWakeTotalToday;
+    private Button mBtnRefresh;
 
     private Button mBtnUndo;
     private TextView mTxtSleepList;
@@ -79,36 +71,28 @@ public class MainActivity extends AppCompatActivity {
         // set ui
         mBtnPoop = findViewById(R.id.btnPoop);
         mTxtPoopLastReportedTime = findViewById(R.id.txtPoopLastReportedTime);
-        mTxtPoopLastReportedPerson = findViewById(R.id.txtPoopLastReportedPerson);
         mTxtPoopTotalToday = findViewById(R.id.txtPoopTotalToday);
 
         mBtnPee = findViewById(R.id.btnPee);
         mTxtPeeLastReportedTime = findViewById(R.id.txtPeeLastReportedTime);
-        mTxtPeeLastReportedPerson = findViewById(R.id.txtPeeLastReportedPerson);
         mTxtPeeTotalToday = findViewById(R.id.txtPeeTotalToday);
 
         mBtnEatB = findViewById(R.id.btnEat);
         mTxtEatBLastReportedTime = findViewById(R.id.txtEatLastReportedTime);
-        mTxtEatBLastReportedPerson = findViewById(R.id.txtEatLastReportedPerson);
         mTxtEatBTotalToday = findViewById(R.id.txtEatTotalToday);
 
         mBtnEatS = findViewById(R.id.btnEat2);
         mTxtEatSLastReportedTime = findViewById(R.id.txtEat2LastReportedTime);
-        mTxtEatSLastReportedPerson = findViewById(R.id.txtEat2LastReportedPerson);
         mTxtEatSTotalToday = findViewById(R.id.txtEat2TotalToday);
 
         mBtnSleep = findViewById(R.id.btnSleep);
         mTxtSleepLastReportedTime = findViewById(R.id.txtSleepLastReportedTime);
-        mTxtSleepLastReportedPerson = findViewById(R.id.txtSleepLastReportedPerson);
         mTxtSleepTotalToday = findViewById(R.id.txtSleepTotalToday);
 
-        mBtnWake = findViewById(R.id.btnRefresh);
-        mTxtWakeLastReportedTime = findViewById(R.id.txtWakeLastReportedTime);
-        mTxtWakeLastReportedPerson = findViewById(R.id.txtWakeLastReportedPerson);
-        mTxtWakeTotalToday = findViewById(R.id.txtWakeTotalToday);
+        mBtnRefresh = findViewById(R.id.btnRefresh);
 
         mBtnUndo = findViewById(R.id.btnUndo);
-        mTxtSleepList = findViewById(R.id.txtSleepList);
+        mTxtSleepList = findViewById(R.id.txtDetailsList);
 
         // todo get user login
 
@@ -117,9 +101,6 @@ public class MainActivity extends AppCompatActivity {
         databaseHandle.setContext(this);
 
         setHandles();
-
-//        mBtnWake.setVisibility(View.INVISIBLE);
-//        mBtnUndo.setVisibility(View.INVISIBLE);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver_UIRefresh,
                 new IntentFilter(Constants.lbmUIRefresh));
@@ -183,39 +164,86 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     public void setUI(String activityType) {
-        setUICluster(mTxtPeeTotalToday, mTxtPeeLastReportedTime, mTxtPeeLastReportedPerson, databaseHandle.getActivityClasses().get(0));
-        setUICluster(mTxtPoopTotalToday, mTxtPoopLastReportedTime, mTxtPoopLastReportedPerson, databaseHandle.getActivityClasses().get(1));
-        setUICluster(mTxtEatBTotalToday, mTxtEatBLastReportedTime, mTxtEatBLastReportedPerson, databaseHandle.getActivityClasses().get(2));
-        setUICluster(mTxtEatSTotalToday, mTxtEatSLastReportedTime, mTxtEatSLastReportedPerson, databaseHandle.getActivityClasses().get(3));
-        setUICluster(mTxtSleepTotalToday, mTxtSleepLastReportedTime, mTxtSleepLastReportedPerson, databaseHandle.getActivityClasses().get(4));
-//        setUICluster(mTxtWakeTotalToday, mTxtWakeLastReportedTime, mTxtWakeLastReportedPerson, databaseHandle.getActivityClasses().get(4));
-
-//        mTxtWakeTotalToday.setText(databaseHandle.getActivityClasses().get(4).getCurrentState());
-        mTxtSleepList.setText(databaseHandle.getActivityClasses().get(4).retrieveLogNotes());
-
-//        // override the sleep ones
-//        mTxtSleepTotalToday.setText(Constants.sleepTimeFormat(databaseHandle.sleepLengthMs));
-//        mTxtWakeTotalToday.setText(databaseHandle.sleepState.toString());
-//        mTxtSleepList.setText(databaseHandle.sleepList);
-//
-//        if (databaseHandle.sleepState == Constants.SleepWake.ASLEEP) {
-//            mBtnSleep.setVisibility(View.INVISIBLE);
-//            mBtnWake.setVisibility(View.VISIBLE);
-//        } else {
-//            mBtnSleep.setVisibility(View.VISIBLE);
-
-//        }
+        setUICluster(mTxtPeeTotalToday, mTxtPeeLastReportedTime, databaseHandle.getActivityClasses().get(0));
+        setUICluster(mTxtPoopTotalToday, mTxtPoopLastReportedTime, databaseHandle.getActivityClasses().get(1));
+        setUICluster(mTxtEatBTotalToday, mTxtEatBLastReportedTime, databaseHandle.getActivityClasses().get(2));
+        setUICluster(mTxtEatSTotalToday, mTxtEatSLastReportedTime, databaseHandle.getActivityClasses().get(3));
+        setUICluster(mTxtSleepTotalToday, mTxtSleepLastReportedTime, databaseHandle.getActivityClasses().get(4));
     }
 
-    public void setUICluster(TextView totalToday, TextView reportedTime, TextView reportedPerson,
-                             ActivityClass activityClass) {
+    public void setUICluster(TextView totalToday, TextView reportedTime, ActivityClass activityClass) {
         String blurb = activityClass.retrieveLastReportedTime() + ", " + activityClass.retrieveLastReportedPerson();
         totalToday.setText(activityClass.retrieveLogTotalToday());
         reportedTime.setText(blurb);
 //        reportedPerson.setText(counterHandle.retrieveLastReportedPerson());
     }
 
+    public void updateUIList(String activityType) {
+        switch (activityType) {
+            case "PEE":
+                mTxtSleepList.setText(databaseHandle.getActivityClasses().get(0).retrieveLogNotes());
+                break;
+
+            case "POOP":
+                mTxtSleepList.setText(databaseHandle.getActivityClasses().get(1).retrieveLogNotes());
+                break;
+
+            case "EAT B":
+                mTxtSleepList.setText(databaseHandle.getActivityClasses().get(2).retrieveLogNotes());
+                break;
+
+            case "EAT S":
+                mTxtSleepList.setText(databaseHandle.getActivityClasses().get(3).retrieveLogNotes());
+                break;
+
+            case "SLEEP":
+                mTxtSleepList.setText(databaseHandle.getActivityClasses().get(4).retrieveLogNotes());
+                break;
+        }
+
+    }
+
     public void setHandles() {
+        mTxtPeeLastReportedTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String activityType = "PEE";
+                updateUIList(activityType);
+            }
+        });
+
+        mTxtPoopLastReportedTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String activityType = "POOP";
+                updateUIList(activityType);
+            }
+        });
+
+        mTxtEatBLastReportedTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String activityType = "EAT B";
+                updateUIList(activityType);
+            }
+        });
+
+        mTxtEatSLastReportedTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String activityType = "EAT S";
+                updateUIList(activityType);
+            }
+        });
+
+        mTxtSleepLastReportedTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String activityType = "SLEEP";
+                updateUIList(activityType);
+            }
+        });
+
         mBtnPee.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -312,7 +340,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        mBtnWake.setOnClickListener(new View.OnClickListener() {
+//        mBtnRefresh.setOnClickListener(new View.OnClickListener() {
 //            String activityType = "SLEEP";
 //
 //            @Override
@@ -338,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        mBtnWake.setOnClickListener(new View.OnClickListener() {
+        mBtnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setUI(null);

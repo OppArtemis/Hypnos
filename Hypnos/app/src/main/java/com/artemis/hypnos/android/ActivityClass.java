@@ -167,14 +167,19 @@ public class ActivityClass {
 
     public void findTotalToday_Count(long yesterdayStartTimeLong, long todayStartTimeLong, long tomorrowStartTimeLong) {
         logTotalToday = 0;
+        logNotes = activityName + "\n";
 
         for (int i = 0; i < logEntries.size(); i++) {
             ActivityHandle newPost = logEntries.get(i);
-            long currentLastReportedTime = newPost.getTimeStartMs();
+            long startTime = newPost.getTimeStartMs();
+            long endTime = newPost.getTimeEndMs();
 
-            if (currentLastReportedTime > todayStartTimeLong && currentLastReportedTime < tomorrowStartTimeLong) {
-
+            if (startTime > todayStartTimeLong && startTime < tomorrowStartTimeLong) {
                 logTotalToday++;
+
+                logNotes = logNotes +
+                        Constants.dateFormatDisplayLong.format(startTime) +
+                        "\n";
             }
         }
     }
@@ -182,7 +187,7 @@ public class ActivityClass {
     public void findTotalToday_Duration(long yesterdayStartTimeLong, long todayStartTimeLong, long tomorrowStartTimeLong) {
         long profileNewDayLimit = todayStartTimeLong;
         logTotalToday = 0;
-        logNotes = "";
+        logNotes = activityName + "\n";
 
         for (int i = 0; i < logEntries.size(); i++) {
             ActivityHandle newPost = logEntries.get(i);
