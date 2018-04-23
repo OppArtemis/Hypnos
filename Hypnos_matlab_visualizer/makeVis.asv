@@ -1,0 +1,100 @@
+clear variables
+clc
+
+dataPath = fullfile('.', 'data', 'hypnos-8bcfb-export.json');
+
+%% Load raw JSON data into MATLAB format
+fid = fopen(dataPath); 
+raw = fread(fid,inf); 
+str = char(raw'); 
+fclose(fid); 
+val = jsondecode(str);
+
+jsonSleepIndices = fieldnames(val.LOG2.x846df70dbf7d2497226c8c902d8d8505.SLEEP);
+% mlSleepArray = datetime(length(jsonSleepIndices), 2);
+for i = 1:length(jsonSleepIndices)
+    currTimeStartMs = val.LOG2.x846df70dbf7d2497226c8c902d8d8505.SLEEP.(jsonSleepIndices{i}).timeStartMs / 1000;
+    currTimeEndMs = val.LOG2.x846df70dbf7d2497226c8c902d8d8505.SLEEP.(jsonSleepIndices{i}).timeEndMs / 1000;
+    
+    mlSleepStruct(i).startTime = datetime(currTimeStartMs, 'ConvertFrom', 'posixtime');
+    mlSleepStruct(i).endTime = datetime(currTimeEndMs, 'ConvertFrom', 'posixtime');
+
+%     mlSleepArray(i, 1) = unix2matlab(currTimeStartMs);
+%     mlSleepArray(i, 2) = unix2matlab(currTimeEndMs);
+%     currTimeStartStr = datestr(currTimeStartMl);
+end
+
+%% Organize data into table
+firstTimestamp = mlSleepStruct(1).startTime;
+newHour = 22;
+
+centralTimeStamp = datetime(firstTimestamp.Year, firstTimestamp.Month, firstTimestamp.Day - 3, newHour, 0, 0);
+yesterdayStartTime = datetime(centralTimeStamp.Year, centralTimeStamp.Month, centralTimeStamp.Day - 1, newHour, 0, 0);
+todayStartTime = datetime(centralTimeStamp.Year, centralTimeStamp.Month, centralTimeStamp.Day, newHour, 0, 0);
+tomorrowStartTime = datetime(centralTimeStamp.Year, centralTimeStamp.Month, centralTimeStamp.Day + 1, newHour, 0, 0);
+
+summaryArray = [];
+summaryMasterInd = 1;
+
+while todayStartTime < datetime('now')
+    % check each day bracket
+    sleepStructStartTime{1} = todayStartTime;
+    sleepStructEndTime{1} = tomorrowStartTime;
+    summarySubInd = 2;
+    
+    for i = 1:size(mlSleepStruct, 2)
+        startTime = mlSleepStruct(i).startTime;
+        endTime = mlSleepStruct(i).endTime; 
+        
+        if (endTime == datetime(1970, 01, 01))
+            endTime = datetime('now');
+        end
+        
+        % decide which times to keep
+        if (startTime < yesterdayStartTime)
+            % the entry is more than a day old. definitely don't keep
+            continue;
+        elseif (startTime < todayStartTime)
+            if (endTime < todayStartTime)
+                % don't keep
+                continue;
+            elseif (endTime > todayStartTime && endTime < tomorrowStartTime)
+                % keep
+            elseif (endTime > tomorrowStartTime)
+                % keep
+            end
+        elseif (startTime > todayStartTime && startTime < tomorrowStartTime)
+            if (endTime < todayStartTime)
+                % error
+                continue;
+            elseif (endTime > todayStartTime && endTime < tomorrowStartTime)
+                % keep
+            elseif (endTime > tomorrowStartTime)
+                % keep
+            end
+        elseif (startTime > tomorrowStartTime)
+            if (endTime < todayStartTime)
+                % error
+                continue;
+            elseif (endTime > todayStartTime && endTime < tomorrowStartTime)
+                %error
+                continue;
+            elseif (endTime > tomorrowStartTime)
+                % don't keep
+                continue;
+            end
+        end
+        
+        sleepStructStartTime{summarySubInd} = startTime;
+        sleepStructEndTime{summarySubInd} = endTime;
+        summarySubInd = summarySubInd + 1;
+    end
+    
+    summaryMasterInd = summaryMasterInd + 1;
+    
+    % update new day brackets
+    centralTimeStamp = datetime(centralTimeStamp.Year, centralTimeStamp.Month, centralTimeStamp.Day + 1, newHour, 0, 0);
+    yesterdayStartTime = datetime(centralTimeStamp.Year, centralTimeStamp.Month, centralTimeStamp.Day - 1, newHour, 0, 0);
+    todayStartTime = datetime(centralTimeStamp.Year, centralTimeStamp.Month, centralTimeStamp.Day, newHour, 0, 0);
+    tomorrowStartTime = datetime(centralTimeStamp.Year, centralTimeStamp.Month, centralTimeStamp.Day + 1, newHour, 0, 0);
+end
