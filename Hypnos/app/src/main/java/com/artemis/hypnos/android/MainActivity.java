@@ -19,7 +19,11 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
+import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
+
 import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,9 +64,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int MENU_ITEM_ITEM3 = 3;
 
     private int detailToDisplay = -1;
-
     private long timeToDisplay = Calendar.getInstance().getTimeInMillis();
-    
+
+    private String newEntryToAdd = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -243,48 +248,6 @@ public class MainActivity extends AppCompatActivity {
 //        reportedPerson.setText(counterHandle.retrieveLastReportedPerson());
     }
 
-    public void timePickAddLogEntry(final String activityType) {
-        final Calendar currentDate = Calendar.getInstance();
-        final Calendar mCurrentTime = Calendar.getInstance();
-        new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                mCurrentTime.set(year, monthOfYear, dayOfMonth);
-                new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        mCurrentTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                        mCurrentTime.set(Calendar.MINUTE, minute);
-                    }
-                }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), false).show();
-            }
-        }, currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DATE)).show();
-
-        long timeMs = currentDate.getTimeInMillis();
-        addLogEntry(activityType, timeMs);
-    }
-
-    public void timePickAddLogEntry2(final String activityType) {
-        Calendar mCurrentTime = Calendar.getInstance();
-        int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
-        int minute = mCurrentTime.get(Calendar.MINUTE);
-        TimePickerDialog mTimePicker
-                = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                Calendar mPickedTime = Calendar.getInstance();
-                mPickedTime.set(Calendar.HOUR_OF_DAY, selectedHour);
-                mPickedTime.set(Calendar.MINUTE, selectedMinute);
-                mPickedTime.set(Calendar.SECOND, 0);
-                long timeMs = mPickedTime.getTimeInMillis();
-
-                addLogEntry(activityType, timeMs);
-            }
-        }, hour, minute, true);//Yes 24 hour time
-        mTimePicker.setTitle("Select Time");
-        mTimePicker.show();
-    }
-
     public void setHandles() {
         mTxtPeeLastReportedTime.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -379,5 +342,77 @@ public class MainActivity extends AppCompatActivity {
 
     private void removeLogEntry(){
         databaseHandle.removeLogEntry();
+    }
+
+    private SlideDateTimeListener listener = new SlideDateTimeListener() {
+        @Override
+        public void onDateTimeSet(Date date)
+        {
+            // Do something with the date. This Date object contains
+            // the date and time that the user has selected.
+
+            long timeMs = date.getTime();
+            addLogEntry(newEntryToAdd, timeMs);
+
+            newEntryToAdd = "";
+        }
+
+        @Override
+        public void onDateTimeCancel()
+        {
+            // Overriding onDateTimeCancel() is optional.
+        }
+    };
+
+    public void timePickAddLogEntry0(final String activityType) {
+        newEntryToAdd = activityType;
+
+        new SlideDateTimePicker.Builder(getSupportFragmentManager())
+                .setListener(listener)
+                .setInitialDate(new Date())
+                .build()
+                .show();
+    }
+
+    public void timePickAddLogEntry2(final String activityType) {
+        final Calendar currentDate = Calendar.getInstance();
+        final Calendar mCurrentTime = Calendar.getInstance();
+        new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                mCurrentTime.set(year, monthOfYear, dayOfMonth);
+                new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        mCurrentTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        mCurrentTime.set(Calendar.MINUTE, minute);
+                    }
+                }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), false).show();
+            }
+        }, currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DATE)).show();
+
+        long timeMs = currentDate.getTimeInMillis();
+        addLogEntry(activityType, timeMs);
+    }
+
+    public void timePickAddLogEntry(final String activityType) {
+        Calendar mCurrentTime = Calendar.getInstance();
+        int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
+        int minute = mCurrentTime.get(Calendar.MINUTE);
+        TimePickerDialog mTimePicker
+                = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                Calendar mPickedTime = Calendar.getInstance();
+                mPickedTime.set(Calendar.HOUR_OF_DAY, selectedHour);
+                mPickedTime.set(Calendar.MINUTE, selectedMinute);
+                mPickedTime.set(Calendar.SECOND, 0);
+                long timeMs = mPickedTime.getTimeInMillis();
+
+                addLogEntry(activityType, timeMs);
+            }
+        }, hour, minute, true);//Yes 24 hour time
+        mTimePicker.setTitle("Select Time");
+        mTimePicker.show();
     }
 }
