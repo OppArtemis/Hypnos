@@ -25,6 +25,9 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 //    compile project(path: ':logic', configuration: 'android-endpoints')
 
+//    // date time picker from https://github.com/jjobes/SlideDateTimePicker
+//    compile project(':slideDateTimePicker')
+
     // async network functionalities
     compile 'com.mcxiaoke.volley:library:1.0.19'
 

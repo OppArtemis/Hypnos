@@ -1,10 +1,38 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:hypnos="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.artemis.hypnos.android.MainActivity2">
+
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:id="@+id/action_refresh"
+        android:icon="@drawable/ic_autorenew_white_24dp"
+        android:title="DateRefresh"
+        hypnos:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_undo"
+        android:icon="@drawable/ic_undo_white_24dp"
+        android:title="Undo"
+        hypnos:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_back"
+        android:icon="@drawable/ic_fast_rewind_white_24dp"
+        android:title="DateBack"
+        hypnos:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_forward"
+        android:icon="@drawable/ic_fast_forward_white_24dp"
+        android:title="DateForward"
+        hypnos:showAsAction="always" />
+
+
+    <!--<item-->
+        <!--android:id="@+id/action_settings"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="@string/action_settings"-->
+        <!--hypnos:showAsAction="never" />-->
+
+
 </menu>

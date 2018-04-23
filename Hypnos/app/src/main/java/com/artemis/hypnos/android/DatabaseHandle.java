@@ -164,9 +164,9 @@ public class DatabaseHandle {
         }
     }
 
-    public void addLogEntry(String activityType, long nowMs) {
-        ActivityHandle newEntryToAdd = new ActivityHandle(activityType, userProfile.returnFirstName(), nowMs);
-        DatabaseReference pathToAdd = refLogRootNode.child(activityType).child(Long.toString(nowMs));
+    public void addLogEntry(String activityType, long currentMs, long logMs) {
+        ActivityHandle newEntryToAdd = new ActivityHandle(activityType, userProfile.returnFirstName(), logMs); // which may be different than the one saved
+        DatabaseReference pathToAdd = refLogRootNode.child(activityType).child(Long.toString(currentMs)); // log entry is the current one
 
         // check the state for this activity. if the activity is switching to state '0', then make
         // a new entry. otherwise, find the existing one and update it
@@ -205,13 +205,20 @@ public class DatabaseHandle {
             logType.logPush(newPost, newPath);
         }
 
-        updateUI(Calendar.getInstance(), logType);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -1);
+        updateUI(calendar, logType, true);
     }
 
-    public void updateUI(Calendar today, ActivityClass logType) {
+    public void updateUI(Calendar today, ActivityClass logType, boolean isToday) {
         long timePoint_Old = babyProfile.newDayTimeLong(today) - 86400000;
         long timePoint_Start = babyProfile.newDayTimeLong(today);
         long timePoint_End = babyProfile.newDayTimeLong(today) + 86400000;
+
+        if (isToday) { // if today is the timepoint of interest, then don't have an upper bound
+            timePoint_End = timePoint_End + 86400000;
+        }
+
         logType.findTotalToday(timePoint_Old, timePoint_Start, timePoint_End);
 
         // update baby state
@@ -258,23 +265,23 @@ public class DatabaseHandle {
 
                     switch (oldPost.getActivityType()) {
                         case PEE:
-                            addLogEntry(oldPost.getActivityType().toString(), oldPost.getTimeMs());
+                            addLogEntry(oldPost.getActivityType().toString(), oldPost.getTimeMs(), oldPost.getTimeMs());
                             break;
 
                         case POOP:
-                            addLogEntry(oldPost.getActivityType().toString(), oldPost.getTimeMs());
+                            addLogEntry(oldPost.getActivityType().toString(), oldPost.getTimeMs(), oldPost.getTimeMs());
                             break;
 
                         case EAT:
-                            addLogEntry("EAT B", oldPost.getTimeMs());
+                            addLogEntry("EAT B", oldPost.getTimeMs(), oldPost.getTimeMs());
                             break;
 
                         case SLEEP:
-                            addLogEntry(oldPost.getActivityType().toString(), oldPost.getTimeMs());
+                            addLogEntry(oldPost.getActivityType().toString(), oldPost.getTimeMs(), oldPost.getTimeMs());
                             break;
 
                         case WAKE:
-                            addLogEntry("SLEEP", oldPost.getTimeMs());
+                            addLogEntry("SLEEP", oldPost.getTimeMs(), oldPost.getTimeMs());
                             break;
                     }
                 }

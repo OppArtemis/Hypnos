@@ -256,7 +256,8 @@ public class ActivityClass {
             logTotalToday = logTotalToday + delta;
 
             logNotes = logNotes +
-                    Constants.dateFormatDisplayLong.format(startTime) +
+                    Constants.dateFormatDisplayLong.format(startTime) + " to " +
+                    Constants.dateFormatDisplayLong.format(endTime) +
                     " for " + Constants.sleepTimeFormat(delta) +
                     " (" + stateNames.get(checkState(newPost)) + ")" +
                     "\n";
@@ -267,9 +268,26 @@ public class ActivityClass {
         if (logEntries.size() == 0) {
             return "Never";
         } else {
-            String output1 = Constants.dateFormatDisplayLong.format(logEntries.get(logEntries.size()-1).getTimeStartMs());
-            long timeElapsed = Calendar.getInstance().getTimeInMillis() - logEntries.get(logEntries.size()-1).getTimeStartMs();
-            String output2 = "(" + Constants.formatInterval(timeElapsed) + " ago)";
+            String output1;
+            String output2;
+            long targetTimestamp;
+            ActivityHandle newPost = logEntries.get(logEntries.size()-1);
+
+            if (newPost.getTimeEndMs() > 0) {
+                targetTimestamp = newPost.getTimeEndMs();
+            } else {
+                targetTimestamp = newPost.getTimeStartMs();
+            }
+            long timeElapsed = Calendar.getInstance().getTimeInMillis() - targetTimestamp;
+
+            output1 = Constants.dateFormatDisplayLong.format(targetTimestamp);
+
+            if (stateNames.size() > 1) {
+                output2 = "(" + Constants.formatInterval(timeElapsed) + " ago), to " + stateNames.get(checkState(newPost));
+            } else {
+                output2 = "(" + Constants.formatInterval(timeElapsed) + " ago)";
+            }
+
             return output1 + " " + output2;
 //            return output1;
         }

@@ -218,32 +218,12 @@
         android:layout_marginLeft="@dimen/horizontal_totaltoday_to_lastreportedtime"
         android:layout_marginTop="@dimen/vertical_totaltoday_to_lastreportedtime" />
 
-    <Button
-        android:id="@+id/btnRefresh"
+    <TextView
+        android:id="@+id/txtDetailsList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/btnSleep"
         android:layout_alignTop="@+id/btnSleep"
         android:layout_marginLeft="@dimen/horizontal_between_activitytypes"
-        android:layout_marginTop="@dimen/vertical_between_activitytypes"
-        android:text="Refresh"/>
-
-    <Button
-        android:id="@+id/btnUndo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btnRefresh"
-        android:layout_alignTop="@+id/btnRefresh"
-        android:layout_marginLeft="@dimen/horizontal_between_activitytypes"
-        android:layout_marginTop="@dimen/vertical_between_activitytypes"
-        android:text="Undo"/>
-
-    <TextView
-        android:id="@+id/txtDetailsList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btnUndo"
-        android:layout_alignTop="@+id/btnUndo"
-        android:layout_marginLeft="@dimen/horizontal_button_to_totaltoday"
-        android:layout_marginTop="@dimen/vertical_button_to_totaltoday"/>
+        android:layout_marginTop="@dimen/vertical_between_activitytypes"/>
 </RelativeLayout>
